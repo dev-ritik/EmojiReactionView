@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.Rect;
@@ -23,6 +24,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,13 +38,15 @@ public class EmojiReactionView extends ImageView {
     ClickInterface mClickInterface;
     int iCurStep = 0;// current step
     ExecuteAsync task;
-    Timer moveBeadTimer;
+    Timer moveBeadTimer, emojiRisingTimer;
 
     private int[] centre = new int[2];
     private int radius = 150;
     private double angle = Math.PI / 3;
     private int clickedEmojiNumber = 0;
-    private boolean clickingAnimWorking, circleAnimWorking;
+    private boolean clickingAnimWorking, circleAnimWorking, emojiRising;
+    ArrayList<RisingEmoji> rects = new ArrayList<>();
+
 
     private Rect emojiRect1 = new Rect();
     private Rect emojiRect2 = new Rect();
@@ -146,26 +151,33 @@ public class EmojiReactionView extends ImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.i("point mi113", "draw" + (emojiBitmap1 == null));
+        Log.i("point mi113", "draw");
         super.onDraw(canvas);
 //        if (mBitmap == null) {
 //            return;
 //        }
-//
-        Log.i("point mi209", "draw" + emojiRect1.left + " " + emojiRect1.right + " " + emojiRect1.width());
+
+        if (circleAnimWorking) {
+            canvas.drawBitmap(emojiBitmap1, null, calculateNewRect(emojiRect1, (int) emojiMovingPoint1[0], (int) emojiMovingPoint1[1], 40), null);
+            canvas.drawBitmap(emojiBitmap2, null, calculateNewRect(emojiRect2, (int) emojiMovingPoint2[0], (int) emojiMovingPoint2[1], 40), null);
+            startcircleAnim();
+        }
         if (clickingAnimWorking) {
             canvas.drawBitmap(emojiBitmap1, null, emojiRect1, null);
             canvas.drawBitmap(emojiBitmap2, null, emojiRect2, null);
 
         }
-        if (circleAnimWorking) {
-            canvas.drawBitmap(emojiBitmap1, null, calculateNewRect(emojiRect1, (int) emojiMovingPoint1[0], (int) emojiMovingPoint1[1]), null);
-            canvas.drawBitmap(emojiBitmap2, null, calculateNewRect(emojiRect2, (int) emojiMovingPoint2[0], (int) emojiMovingPoint2[1]), null);
-            startcircleAnim();
+        Log.i("point mi171", "draw" + emojiRising + " ");
+
+        if (emojiRising) {
+            for (RisingEmoji re : rects) {
+                canvas.drawBitmap(emojiBitmap1, null, re.getRect(), re.getPaint());
+            }
         }
     }
 
     public void test() {
+        emojiRisinginit(1);
     }
 
     @Override
@@ -188,10 +200,10 @@ public class EmojiReactionView extends ImageView {
 
     private void startClickingAnim(Rect emojiRect) {
         clickingAnimWorking = true;
-        animateInHorizontal(emojiRect);
+        clickAnim(emojiRect);
     }
 
-    private void animateInHorizontal(final Rect emojiRect) {
+    private void clickAnim(final Rect emojiRect) {
         ValueAnimator animator = ValueAnimator.ofInt(0, 4);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -209,6 +221,64 @@ public class EmojiReactionView extends ImageView {
         });
         animator.setDuration(800);
         animator.start();
+    }
+
+    private void emojiRisinginit(int emojiNumber) {
+        emojiRising = true;
+        for (int i = 0; i < 24; i++) {
+            Rect risingRect = calculateNewRect(new Rect(), new Random().nextInt(getWidth() - getPaddingLeft() - getPaddingRight() + 1), getHeight() - getPaddingBottom() + new Random().nextInt(300), 20);
+            rects.add(new RisingEmoji(risingRect, new Random().nextInt(10) + 20, new Random().nextInt(130) + 160, new Random().nextInt(6) + 20));
+        }
+        emojiRisingAnim();
+    }
+
+    private void emojiRisingAnim() {
+
+        if (emojiRisingTimer == null) {
+            emojiRisingTimer = new Timer();
+            emojiRisingTimer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+//                Log.i("point ma255", "run started");
+                    task = new ExecuteAsync();
+                    task.execute(new String[]{null});
+                }
+            }, 5, 100);
+        }
+
+    }
+
+    private void riseEmoji() {
+        Log.i("point mi257", "riseEmoji" + rects.size());
+
+        for (int i = 0; i < rects.size(); i++) {
+            rects.get(i).setRect(calculateNewRect(rects.get(i).getRect(), rects.get(i).getRect().centerX(), rects.get(i).getRect().centerY() - rects.get(i).getSpeed(), rects.get(i).getHalfSide()));
+            if (rects.get(i).getRect().top <= rects.get(i).getMaxHeight()) {
+                if (rects.get(i).getPaint() == null) rects.get(i).setPaint(new Paint());
+
+                rects.get(i).getPaint().setAlpha(rects.get(i).getPaint().getAlpha() / 2);
+                Log.i("point mi268", "riseEmoji" + rects.get(i).getPaint().getAlpha());
+
+                if (rects.get(i).getPaint().getAlpha() < 10) {
+                    rects.remove(rects.get(i));
+                    i--;
+                }
+
+            }
+//            Log.i("point mi271", "riseEmoji" + rects.size());
+            if (rects.size() == 0) {
+                emojiRising = false;
+                if (emojiRisingTimer != null) {
+                    emojiRisingTimer.cancel();
+                    emojiRisingTimer.purge();
+                    emojiRisingTimer = null;
+                }
+                break;
+            }
+//            Log.i("point mi269", "riseEmoji" + rects.size());
+
+        }
+
     }
 
     @Override
@@ -289,8 +359,6 @@ public class EmojiReactionView extends ImageView {
 
     private void initializeBitmap() {
         mBitmap = getBitmapFromDrawable(getDrawable());
-//        emojiBitmap   1 = getBitmapFromDrawable(getResources().getDrawable(R.drawable.em1));
-//        emojiBitmap2 = getBitmapFromDrawable(getResources().getDrawable(R.drawable.em2));
         setup();
     }
 
@@ -345,7 +413,6 @@ public class EmojiReactionView extends ImageView {
             pm.getPosTan(fSegmentLen * iCurStep, emojiMovingPoint1, null);
             pm2.getPosTan(fSegmentLen * iCurStep, emojiMovingPoint2, null);
             iCurStep++;
-//            Log.i("point mi197",  + emojiMovingPoint1[0] + "  " + emojiMovingPoint1[1]);
 
             invalidate();
         } else {
@@ -358,17 +425,13 @@ public class EmojiReactionView extends ImageView {
         return new RectF(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom());
     }
 
-    private Rect calculateNewRect(Rect initialRect, int x, int y) {
+    private Rect calculateNewRect(Rect initialRect, int x, int y, int halfSide) {
 
-        int width = 80;
-        int height = 80;
-        int halfSide = 80;
         initialRect.left = x - halfSide;
         initialRect.right = x + halfSide;
         initialRect.top = y - halfSide;
         initialRect.bottom = y + halfSide;
         return initialRect;
-//        return new Rect(x-40, y-40, x+40, y+40);
     }
 
     // asynctask to reduce load on main thread
@@ -379,12 +442,8 @@ public class EmojiReactionView extends ImageView {
 
         @Override
         protected String doInBackground(String... urls) {
-            //alternative generate and dissolve cycles
-            Log.i("point mi137", "coordleft" + coordLeft);
-
-            coordLeft += 20;
-            emojiRect1 = new Rect(coordLeft, 20, coordLeft + 80, 70);
-            emojiRect2 = new Rect(coordLeft, 80, coordLeft + 80, 120);
+//            Log.i("point mi137", "coordleft" + coordLeft);
+            riseEmoji();
             return null;
         }
 

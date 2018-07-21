@@ -1,10 +1,7 @@
 package com.ritik.emojireactionview;
 
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -56,8 +53,10 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     public void test(View view) {
-        Log.i("point ma60", counter + "");
+//        Log.i("point ma60", counter + "");
 //        myImage.setColorFilter(getContrastBrightnessFilter((float) (counter + 10) / 10, 100));
-        counter++;
+//        counter++;
+
+        myImage.test();
     }
 }
