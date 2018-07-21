@@ -1,10 +1,12 @@
 package com.ritik.emojireactionlibrary;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.Rect;
@@ -34,13 +36,18 @@ public class EmojiReactionView extends ImageView {
     int iCurStep = 0;// current step
     ExecuteAsync task;
     Timer moveBeadTimer;
+
+    private int[] centre = new int[2];
+    private int radius = 150;
+    private double angle = Math.PI / 3;
+    private int clickedEmojiNumber = 0;
+    private boolean clickingAnimWorking, circleAnimWorking;
+
     private Rect emojiRect1 = new Rect();
     private Rect emojiRect2 = new Rect();
     private Rect emojiRect3 = new Rect();
     private Rect emojiRect4 = new Rect();
-    private int[] centre = new int[2];
-    private int radius = 150;
-    private double angle = Math.PI / 3;
+
     private int[] emojiPoint1 = new int[2];
     private int[] emojiPoint2 = new int[2];
     private int[] emojiPoint3 = new int[2];
@@ -64,8 +71,6 @@ public class EmojiReactionView extends ImageView {
 
     public EmojiReactionView(Context context) {
         super(context);
-        Log.i("point mi69", "const");
-
         init();
     }
 
@@ -77,7 +82,6 @@ public class EmojiReactionView extends ImageView {
         super(context, attrs, defStyle);
         this.mContext = context;
         this.initBaseXMLAttrs(context, attrs);
-        Log.i("point mi81", "attrs");
 
         setScaleType(ScaleType.FIT_XY);
         init();
@@ -88,14 +92,16 @@ public class EmojiReactionView extends ImageView {
 
         final int arrayResourceId = arr.getResourceId(
                 R.styleable.EmojiReactionView_emojis, 0);
-        Log.i("point mi93", "attrs"+arrayResourceId);
+        Log.i("point mi93", "attrs" + arrayResourceId);
 
         if (arrayResourceId != 0) {
             final TypedArray resourceArray = context.getResources().obtainTypedArray(arrayResourceId);
             for (int i = 0; i < resourceArray.length(); i++) {
-                final int resourceId = resourceArray.getResourceId(i, 0);
+                final int resourceId = resourceArray.getResourceId(0, 0);
+                final int resourceId1 = resourceArray.getResourceId(1, 0);
                 emojiBitmap1 = getBitmapFromDrawable(getResources().getDrawable(resourceId));
-                Log.i("point mi89", "attrs");
+                emojiBitmap2 = getBitmapFromDrawable(getResources().getDrawable(resourceId1));
+                Log.i("point mi89", "attrs" + i + " " + resourceId);
 
             }
             resourceArray.recycle();
@@ -146,13 +152,20 @@ public class EmojiReactionView extends ImageView {
 //            return;
 //        }
 //
-//        Log.i("point mi206", "draw" + emojiRect1.left + " " + emojiRect1.top);
-//
-//        canvas.drawBitmap(emojiBitmap2, null, calculateNewRect(emojiRect2, (int) emojiMovingPoint2[0], (int) emojiMovingPoint2[1]), null);
-        Log.i("point mi209", "draw" + emojiRect1.left + " " + emojiRect1.top);
-        canvas.drawBitmap(emojiBitmap1, null, calculateNewRect(emojiRect1, (int) emojiMovingPoint1[0], (int) emojiMovingPoint1[1]), null);
-//        Log.i("point mi211", "draw" + emojiRect1.left + " " + emojiRect1.top);
-        startcircleAnim();
+        Log.i("point mi209", "draw" + emojiRect1.left + " " + emojiRect1.right + " " + emojiRect1.width());
+        if (clickingAnimWorking) {
+            canvas.drawBitmap(emojiBitmap1, null, emojiRect1, null);
+            canvas.drawBitmap(emojiBitmap2, null, emojiRect2, null);
+
+        }
+        if (circleAnimWorking) {
+            canvas.drawBitmap(emojiBitmap1, null, calculateNewRect(emojiRect1, (int) emojiMovingPoint1[0], (int) emojiMovingPoint1[1]), null);
+            canvas.drawBitmap(emojiBitmap2, null, calculateNewRect(emojiRect2, (int) emojiMovingPoint2[0], (int) emojiMovingPoint2[1]), null);
+            startcircleAnim();
+        }
+    }
+
+    public void test() {
     }
 
     @Override
@@ -161,12 +174,41 @@ public class EmojiReactionView extends ImageView {
 
         if (emojiRect1.contains((int) event.getX(), (int) event.getY())) {
             mClickInterface.onEmoji1Clicked((int) event.getX(), (int) event.getY());
+            clickedEmojiNumber = 1;
+            startClickingAnim(emojiRect1);
         } else if (emojiRect2.contains((int) event.getX(), (int) event.getY())) {
             mClickInterface.onEmoji2Clicked((int) event.getX(), (int) event.getY());
+            clickedEmojiNumber = 2;
+            startClickingAnim(emojiRect2);
         }
         return false;
 
         //TODO: want onclick of user to work, return correctclick && super.onTouchEvent(event)
+    }
+
+    private void startClickingAnim(Rect emojiRect) {
+        clickingAnimWorking = true;
+        animateInHorizontal(emojiRect);
+    }
+
+    private void animateInHorizontal(final Rect emojiRect) {
+        ValueAnimator animator = ValueAnimator.ofInt(0, 4);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                emojiRect.inset((int) valueAnimator.getAnimatedValue(), (int) valueAnimator.getAnimatedValue());
+                invalidate();
+                Log.i("point 198", emojiRect.left + " " + emojiRect.right + " " + emojiRect.width());
+            }
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+//                clickingAnimWorking = false;
+            }
+        });
+        animator.setDuration(800);
+        animator.start();
     }
 
     @Override
@@ -290,7 +332,7 @@ public class EmojiReactionView extends ImageView {
         emojiPath2.lineTo(emojiPoint2[0], emojiPoint2[1]);
 
 //        Log.i("point mi326", "pl" + getPaddingLeft() + " pr " + getPaddingRight() + " w " + getWidth());
-
+        circleAnimWorking = true;
         startcircleAnim();
     }
 
@@ -308,6 +350,7 @@ public class EmojiReactionView extends ImageView {
             invalidate();
         } else {
             iCurStep = 0;
+            circleAnimWorking = false;
         }
     }
 
@@ -319,10 +362,11 @@ public class EmojiReactionView extends ImageView {
 
         int width = 80;
         int height = 80;
-        initialRect.left = x - 40;
-        initialRect.right = x + 40;
-        initialRect.top = y - 40;
-        initialRect.bottom = y + 40;
+        int halfSide = 80;
+        initialRect.left = x - halfSide;
+        initialRect.right = x + halfSide;
+        initialRect.top = y - halfSide;
+        initialRect.bottom = y + halfSide;
         return initialRect;
 //        return new Rect(x-40, y-40, x+40, y+40);
     }
