@@ -4,5 +4,6 @@
     <array name="emoji">
         <item>@drawable/em1_min</item>
         <item>@drawable/em2_min</item>
+        <item>@drawable/em3</item>
     </array>
 </resources>
