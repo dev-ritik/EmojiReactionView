@@ -30,6 +30,8 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.util.TypedValue.TYPE_DIMENSION;
+
 public class EmojiReactionView extends ImageView {
 
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
@@ -38,16 +40,15 @@ public class EmojiReactionView extends ImageView {
     ExecuteAsync task;
     Timer emojiRisingTimer;
 
-    private int[] centre = new int[2];
-    private int radius = 150;
-    private double angle;
+    private float[] centre = new float[2];
+    private float radius = 150;
     private int clickedEmojiNumber = -1;
     private int numberOfEmojis = 0;
     private int clickedRadius = 50;
     Paint clickedPaint = new Paint();
 
     private boolean clickingAnimWorking, circleAnimWorking, emojiRising;
-    ArrayList<RisingEmoji> rects = new ArrayList<>();
+    ArrayList<RisingEmoji> risingEmojis = new ArrayList<>();
 
     ArrayList<Rect> emojiRect = new ArrayList<>();
     private Rect coverRect = new Rect();
@@ -63,6 +64,7 @@ public class EmojiReactionView extends ImageView {
     private boolean mReady;
     private boolean mSetupPending, alternater = false;
     private boolean coverEmojiVisible;
+    private int numberOfTimes = 24;
 
     public EmojiReactionView(Context context) {
         super(context);
@@ -83,20 +85,57 @@ public class EmojiReactionView extends ImageView {
     final void initBaseXMLAttrs(Context context, AttributeSet attrs) {
         final TypedArray arr = context.obtainStyledAttributes(attrs, R.styleable.EmojiReactionView);
 
-        final int arrayResourceId = arr.getResourceId(
-                R.styleable.EmojiReactionView_emojis, 0);
-        Log.i("point mi93", "attrs" + arrayResourceId);
+        Log.i("point mi88", "attrs");
+        final int N = arr.getIndexCount();
+        for (int i = 0; i < N; ++i) {
+            int attr = arr.getIndex(i);
+//            Log.i("point mi92", "attrs" + i);
 
-        if (arrayResourceId != 0) {
-            final TypedArray resourceArray = context.getResources().obtainTypedArray(arrayResourceId);
-            for (int i = 0; i < resourceArray.length(); i++) {
-                emojiBitmap.add(getBitmapFromDrawable(getResources().getDrawable(resourceArray.getResourceId(i, 0))));
-//                Log.i("point mi100", "attrs" + emojiBitmap.get(i).getHeight() + " " + emojiBitmap.get(i).getWidth());
+            if (attr == R.styleable.EmojiReactionView_emojis) {
+                final TypedArray resourceArray = context.getResources().obtainTypedArray(arr.getResourceId(R.styleable.EmojiReactionView_emojis, 0));
+                for (int j = 0; j < resourceArray.length(); j++) {
+                    emojiBitmap.add(getBitmapFromDrawable(getResources().getDrawable(resourceArray.getResourceId(j, 0))));
+                }
+                resourceArray.recycle();
+            } else if (attr == R.styleable.EmojiReactionView_center_X) {
+//                Log.i("point 104", "attrs");
+                if (arr.peekValue(attr).type == TYPE_DIMENSION)
+                    centre[0] = arr.getDimensionPixelSize(attr, -1);
+                else {
+                    centre[0] = checkFraction(arr.getFraction(attr, 1, 1, -1));
+                }
+            } else if (attr == R.styleable.EmojiReactionView_center_Y) {
+                if (arr.peekValue(attr).type == TYPE_DIMENSION)
+                    centre[1] = arr.getDimensionPixelSize(attr, -1);
+                else
+                    centre[1] = checkFraction(arr.getFraction(attr, 1, 1, -1));
+            } else if (attr == R.styleable.EmojiReactionView_radius) {
+                if (arr.peekValue(attr).type == TYPE_DIMENSION)
+                    radius = arr.getDimensionPixelSize(attr, (int) radius);
+                else
+                    radius = checkFraction(arr.getFraction(attr, 1, 1, radius));
+//                Log.i("point mi117", radius + "");
+
             }
-            resourceArray.recycle();
+//            else if (attr == R.styleable.EmojiReactionView_height_emojis_rising) {
+//                if (arr.peekValue(attr).type == TYPE_DIMENSION)
+//                    radius = arr.getDimensionPixelSize(attr, 100);
+//                else
+//                    radius = (int) arr.getFraction(attr, 100, 100, 100);
+//            }
+            else if (attr == R.styleable.EmojiReactionView_emojis_rising_number) {
+                numberOfTimes = arr.getInt(attr, numberOfEmojis);
+            }
         }
         arr.recycle();
         numberOfEmojis = emojiBitmap.size();
+    }
+
+    private float checkFraction(float input) {
+        if (input == -1 || (input <= 1 && input >= 0)) {
+            return input;
+        } else throw new IllegalArgumentException();
+
     }
 
     private void init() {
@@ -110,6 +149,7 @@ public class EmojiReactionView extends ImageView {
     }
 
     private void setup() {
+        Log.i("point 158", "setup");
         if (!mReady) {
             mSetupPending = true;
             return;
@@ -123,15 +163,28 @@ public class EmojiReactionView extends ImageView {
         clickedPaint.setColor(Color.argb(125, 185, 185, 185));
 
         coverRect = new Rect(getPaddingLeft() + 10, getHeight() - getPaddingRight() - 80, 80, getHeight() - getPaddingRight() - 10);
-
         for (int i = 1; i <= numberOfEmojis; i++) {
             emojiRect.add(new Rect());
         }
 
-        centre[0] = (getWidth() + getPaddingLeft() - getPaddingRight()) / 2;
-        centre[1] = getHeight() - getPaddingBottom();
+        if (centre[0] == -1)
+            centre[0] = (getWidth() + getPaddingLeft() - getPaddingRight()) / 2;
+        else if (centre[0] <= 1 && centre[0] >= 0) {
+            centre[0] *= getWidth() + getPaddingLeft() - getPaddingRight();
+        }
+        if (centre[1] == -1)
+            centre[1] = getHeight() - getPaddingBottom();
+        else if (centre[1] <= 1 && centre[1] >= 0) {
+            centre[1] *= getHeight() - getPaddingBottom();
+        }
 
-        angle = Math.PI / (numberOfEmojis + 1);
+        if (radius == -1)
+            radius = (getWidth() + getPaddingLeft() - getPaddingRight());
+        else if (radius <= 1 && radius >= 0) {
+            radius *= (getWidth() + getPaddingLeft() - getPaddingRight());
+        }
+
+        double angle = Math.PI / (numberOfEmojis + 1);
 
         for (int i = 1; i <= numberOfEmojis; i++) {
             emojiPoint.add(new int[]{(int) (centre[0] + radius * Math.cos(i * angle + Math.PI)), (int) (centre[1] + radius * Math.sin(i * angle + Math.PI))});
@@ -183,13 +236,14 @@ public class EmojiReactionView extends ImageView {
         }
 
         if (emojiRising) {
-            for (RisingEmoji re : rects) {
+            for (RisingEmoji re : risingEmojis) {
                 canvas.drawBitmap(emojiBitmap.get(clickedEmojiNumber), null, re.getRect(), re.getPaint());
             }
         }
     }
 
     public void test() {
+        setup();
     }
 
     private void startCircleAnim() {
@@ -277,9 +331,10 @@ public class EmojiReactionView extends ImageView {
 
     private void emojiRisinginit() {
         emojiRising = true;
-        for (int i = 0; i < 24; i++) {
+        for (int i = 0; i < numberOfTimes; i++) {
             Rect risingRect = calculateNewRect(new Rect(), new Random().nextInt(getWidth() - getPaddingLeft() - getPaddingRight() + 1), getHeight() - getPaddingBottom() + new Random().nextInt(300), 20);
-            rects.add(new RisingEmoji(risingRect, new Random().nextInt(10) + 20, new Random().nextInt(130) + 160, new Random().nextInt(6) + 20));
+            //TODO: replace max height with something of max time
+            risingEmojis.add(new RisingEmoji(risingRect, new Random().nextInt(10) + 20, new Random().nextInt(130) + 160, new Random().nextInt(6) + 20));
         }
         emojiRisingAnim();
     }
@@ -325,20 +380,21 @@ public class EmojiReactionView extends ImageView {
     }
 
     private void riseEmoji() {
-        for (int i = 0; i < rects.size(); i++) {
-            rects.get(i).setRect(calculateNewRect(rects.get(i).getRect(), rects.get(i).getRect().centerX(), rects.get(i).getRect().centerY() - rects.get(i).getSpeed(), rects.get(i).getHalfSide()));
-            if (rects.get(i).getRect().top <= rects.get(i).getMaxHeight()) {
-                if (rects.get(i).getPaint() == null) rects.get(i).setPaint(new Paint());
+        for (int i = 0; i < risingEmojis.size(); i++) {
+            RisingEmoji re = risingEmojis.get(i);
+            re.setRect(calculateNewRect(re.getRect(), re.getRect().centerX(), re.getRect().centerY() - re.getSpeed(), re.getHalfSide()));
+            if (re.getRect().top <= re.getMaxHeight()) {
+                if (re.getPaint() == null) re.setPaint(new Paint());
 
-                rects.get(i).getPaint().setAlpha(rects.get(i).getPaint().getAlpha() / 2);
+                re.getPaint().setAlpha(re.getPaint().getAlpha() / 2);
 
-                if (rects.get(i).getPaint().getAlpha() < 10) {
-                    rects.remove(rects.get(i));
+                if (re.getPaint().getAlpha() < 10) {
+                    risingEmojis.remove(risingEmojis.get(i));
                     i--;
                 }
 
             }
-            if (rects.size() == 0) {
+            if (risingEmojis.size() == 0) {
                 emojiRising = false;
                 if (emojiRisingTimer != null) {
                     emojiRisingTimer.cancel();

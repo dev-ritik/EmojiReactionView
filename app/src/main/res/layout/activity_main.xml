@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -17,9 +17,8 @@
             android:id="@+id/test"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="test"
             android:onClick="test"
-            />
+            android:text="test" />
 
         <com.ritik.emojireactionlibrary.EmojiReactionView
             android:id="@+id/image"
@@ -27,7 +26,11 @@
             android:layout_height="match_parent"
             android:scaleType="fitXY"
             android:src="@drawable/android1"
-            app:emojis="@array/emoji"/>
+            app:center_X="50%"
+            app:center_Y="50%"
+            app:emojis="@array/emoji"
+            app:emojis_rising_number="10"
+            app:radius="9dp" />
 
         <!--<ImageView-->
         <!--android:id="@+id/image1"-->

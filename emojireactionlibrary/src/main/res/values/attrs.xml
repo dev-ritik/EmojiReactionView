@@ -3,6 +3,13 @@
 
     <declare-styleable name="EmojiReactionView">
         <attr name="emojis" format="reference" />
+
+        <attr name="center_X" format="dimension|fraction" />
+        <attr name="center_Y" format="dimension|fraction" />
+        <attr name="radius" format="dimension|fraction" />
+        <attr name="height_emojis_rising" format="dimension|fraction" />
+        <attr name="repetition_Times" format="integer" />
+        <attr name="emojis_rising_number" format="integer" />
     </declare-styleable>
 
 </resources>
