@@ -37,40 +37,45 @@ public class EmojiReactionView extends ImageView {
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
     private static final int COLORDRAWABLE_DIMENSION = 2;
     ClickInterface mClickInterface;
-    ExecuteAsync task;
-    Timer emojiRisingTimer;
-
-    private float[] centre = new float[2];
-    private float radius = 150;
+    private ArrayList<Bitmap> emojiBitmap = new ArrayList<>();
     private int clickedEmojiNumber = -1;
     private int numberOfEmojis = 0;
-    private int clickedRadius = 50;
-    Paint clickedPaint = new Paint();
+    private boolean mReady;
+    private boolean mSetupPending;
 
-    private boolean clickingAnimWorking, circleAnimWorking, emojiRising;
-
-    private int emojisRisingSpeed = 20;
-    ArrayList<RisingEmoji> risingEmojis = new ArrayList<>();
-
+    //coverEmoji
     private Rect coverRect = new Rect();
     private int coverSide = 80;
     private float coverCenterX;
     private float coverCenterY;
+    private Bitmap coverBitmap;
+    private boolean coverEmojiVisible;
 
+    //circleAnim
+    private float[] centre = new float[2];
+    private float radius = 150;
     private int emojiReactSide = 80;
-    int iCurStep = 0;// current step
     ArrayList<Rect> emojiRect = new ArrayList<>();
     private ArrayList<int[]> emojiPoint = new ArrayList<>();
     private ArrayList<int[]> emojiMovingPoint = new ArrayList<>();
     ArrayList<PathMeasure> pms = new ArrayList<>();
+    private boolean circleAnimWorking;
 
-    private Bitmap coverBitmap;
-    private ArrayList<Bitmap> emojiBitmap = new ArrayList<>();
+    //clicking/unclicking
+    private int clickedRadius = 50;
+    Paint clickedPaint = new Paint();
+    int iCurStep = 0;// current step
+    private boolean clickingAnimWorking;
 
-    private boolean mReady;
-    private boolean mSetupPending, alternater = false;
-    private boolean coverEmojiVisible;
-    private int numberOfTimes = 24;
+    //risingEmoji
+    private int emojisRisingSpeed = 20;
+    ArrayList<RisingEmoji> risingEmojis = new ArrayList<>();
+    private int numberOfRisers = 24;
+    private boolean emojiRising;
+    ExecuteAsync task;
+    Timer emojiRisingTimer;
+    int vanished = 0;
+    boolean startDisappear = false;
 
     public EmojiReactionView(Context context) {
         super(context);
@@ -127,14 +132,14 @@ public class EmojiReactionView extends ImageView {
 
             } else if (attr == R.styleable.EmojiReactionView_cover_Center_X) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    coverCenterX = arr.getDimensionPixelSize(attr, (int) -1);
+                    coverCenterX = arr.getDimensionPixelSize(attr, -1);
                 else
                     coverCenterX = checkFraction(arr.getFraction(attr, 1, 1, -1));
 //                Log.i("point mi117", radius + "");
 
             } else if (attr == R.styleable.EmojiReactionView_cover_Center_Y) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    coverCenterY = arr.getDimensionPixelSize(attr, (int) -1);
+                    coverCenterY = arr.getDimensionPixelSize(attr, -1);
                 else
                     coverCenterY = checkFraction(arr.getFraction(attr, 1, 1, -1));
 //                Log.i("point mi117", radius + "");
@@ -162,7 +167,7 @@ public class EmojiReactionView extends ImageView {
 //                    radius = (int) arr.getFraction(attr, 100, 100, 100);
 //            }
             else if (attr == R.styleable.EmojiReactionView_emojis_rising_number) {
-                numberOfTimes = arr.getInt(attr, numberOfEmojis);
+                numberOfRisers = arr.getInt(attr, numberOfEmojis);
             } else if (attr == R.styleable.EmojiReactionView_set_emoji) {
                 clickedEmojiNumber = arr.getInt(attr, clickedEmojiNumber);
             }
@@ -496,10 +501,9 @@ public class EmojiReactionView extends ImageView {
 
     private void emojiRisinginit() {
         emojiRising = true;
-        for (int i = 0; i < numberOfTimes; i++) {
+        for (int i = 0; i < numberOfRisers; i++) {
             Rect risingRect = calculateNewRect(new Rect(), new Random().nextInt(getWidth() - getPaddingLeft() - getPaddingRight() + 1), getHeight() - getPaddingBottom() + new Random().nextInt(300), 20);
-            //TODO: replace max height with something of max time
-            risingEmojis.add(new RisingEmoji(risingRect, new Random().nextInt(10) + 20, new Random().nextInt(130) + 160, new Random().nextInt(6) + emojisRisingSpeed));
+            risingEmojis.add(new RisingEmoji(risingRect, new Random().nextInt(10) + 20, 300, new Random().nextInt(6) + emojisRisingSpeed));
         }
         emojiRisingAnim();
     }
@@ -513,45 +517,40 @@ public class EmojiReactionView extends ImageView {
                 public void run() {
 //                Log.i("point ma255", "run started");
                     task = new ExecuteAsync();
-                    task.execute(new String[]{null});
+                    task.execute();
                 }
             }, 5, 100);
         }
 
     }
 
-    private class ExecuteAsync extends AsyncTask<String, String, String> {
+    private class ExecuteAsync extends AsyncTask<Void, Void, Void> {
 
         @Override
-        protected String doInBackground(String... urls) {
+        protected Void doInBackground(Void... params) {
             riseEmoji();
             return null;
         }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(Void result) {
             invalidate();
         }
 
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-        }
     }
 
     private void riseEmoji() {
+        vanished += new Random().nextInt(2);
+
         for (int i = 0; i < risingEmojis.size(); i++) {
             RisingEmoji re = risingEmojis.get(i);
             re.setRect(calculateNewRect(re.getRect(), re.getRect().centerX(), re.getRect().centerY() - re.getSpeed(), re.getHalfSide()));
-            if (re.getRect().top <= re.getMaxHeight()) {
+            if (startDisappear || re.getRect().top <= re.getMaxHeight()) {
+                startDisappear = true;
+                if (vanished > risingEmojis.size()) vanished = risingEmojis.size();
                 if (re.getPaint() == null) re.setPaint(new Paint());
-
-                re.getPaint().setAlpha(re.getPaint().getAlpha() / 2);
+                if (i <= vanished)
+                    re.getPaint().setAlpha(re.getPaint().getAlpha() / 2);
 
                 if (re.getPaint().getAlpha() < 10) {
                     risingEmojis.remove(risingEmojis.get(i));
@@ -567,6 +566,8 @@ public class EmojiReactionView extends ImageView {
                     emojiRisingTimer = null;
                 }
                 coverEmojiVisible = true;
+                vanished = 0;
+                startDisappear = false;
                 break;
             }
         }
@@ -607,7 +608,7 @@ public class EmojiReactionView extends ImageView {
         }
         return false;
 
-        //TODO: want onclick of user to work, return correctclick && super.onTouchEvent(event)
+        //TODO: want onclick of user to work, return correctClick && super.onTouchEvent(event)
     }
 
     @Override
