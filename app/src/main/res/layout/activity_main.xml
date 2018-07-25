@@ -13,12 +13,39 @@
         android:gravity="bottom"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/test"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="test"
-            android:text="test" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="test"
+                android:text="test" />
+
+            <Button
+                android:id="@+id/test1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="test1"
+                android:text="test1" />
+
+            <Button
+                android:id="@+id/test2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="test2"
+                android:text="test2" />
+
+            <Button
+                android:id="@+id/test3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="test3"
+                android:text="test3" />
+        </LinearLayout>
 
         <com.ritik.emojireactionlibrary.EmojiReactionView
             android:id="@+id/image"
@@ -26,11 +53,9 @@
             android:layout_height="match_parent"
             android:scaleType="fitXY"
             android:src="@drawable/android1"
-            app:center_X="50%"
-            app:center_Y="50%"
             app:emojis="@array/emoji"
-            app:emojis_rising_number="10"
-            app:radius="9dp" />
+            app:emojis_rising_speed="20dp"
+            app:set_emoji="1" />
 
         <!--<ImageView-->
         <!--android:id="@+id/image1"-->

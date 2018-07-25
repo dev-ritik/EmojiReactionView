@@ -7,9 +7,14 @@
         <attr name="center_X" format="dimension|fraction" />
         <attr name="center_Y" format="dimension|fraction" />
         <attr name="radius" format="dimension|fraction" />
-        <attr name="height_emojis_rising" format="dimension|fraction" />
-        <attr name="repetition_Times" format="integer" />
+        <attr name="cover_Center_X" format="dimension|fraction" />
+        <attr name="cover_Center_Y" format="dimension|fraction" />
+        <attr name="cover_side" format="dimension" />
+        <attr name="emoji_react_side" format="dimension" />
+        <attr name="emojis_rising_height" format="dimension|fraction" />
+        <attr name="emojis_rising_speed" format="dimension" />
         <attr name="emojis_rising_number" format="integer" />
+        <attr name="set_emoji" format="integer" />
     </declare-styleable>
 
 </resources>
