@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.ritik.emojireactionlibrary.ClickInterface;
@@ -13,7 +12,6 @@ import com.ritik.emojireactionlibrary.EmojiReactionView;
 public class MainActivity extends AppCompatActivity {
 
     EmojiReactionView myImage;
-    int counter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void test1(View view) {
-
+        myImage.test();
     }
 
     public void test2(View view) {
