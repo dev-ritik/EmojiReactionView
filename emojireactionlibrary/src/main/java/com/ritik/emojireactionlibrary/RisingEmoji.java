@@ -13,11 +13,6 @@ public class RisingEmoji {
     public RisingEmoji() {
     }
 
-    public RisingEmoji(Rect rect, int halfSide) {
-        this.rect = rect;
-        this.halfSide = halfSide;
-    }
-
     public RisingEmoji(Rect rect, int halfSide, int maxHeight, int speed) {
         this.rect = rect;
         this.halfSide = halfSide;
