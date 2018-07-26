@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         myImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "clicked!!", Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -54,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void test2(View view) {
-        myImage.setEmojiReactSide(100);
     }
 
     public void test3(View view) {

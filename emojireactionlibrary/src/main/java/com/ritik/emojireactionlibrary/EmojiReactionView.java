@@ -12,12 +12,9 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -34,8 +31,6 @@ import static android.util.TypedValue.TYPE_DIMENSION;
 
 public class EmojiReactionView extends ImageView {
     //TODO: arraylist or array
-    private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
-    private static final int COLORDRAWABLE_DIMENSION = 2;
     ClickInterface mClickInterface;
     private Bitmap[] emojiBitmap;
     private int clickedEmojiNumber = -1;
@@ -179,10 +174,7 @@ public class EmojiReactionView extends ImageView {
         arr.recycle();
         numberOfEmojis = emojiId.size();
         emojiBitmap = new Bitmap[numberOfEmojis];
-        if (clickedEmojiNumber != -1) {
-            emojiBitmap[clickedEmojiNumber] = getBitmapFromDrawable(getResources().getDrawable(emojiId.get(clickedEmojiNumber)));
 
-        }
     }
 
     private float checkFraction(float input) {
@@ -258,12 +250,6 @@ public class EmojiReactionView extends ImageView {
         return coverSide;
     }
 
-    public void setCoverSide(int coverSide) {
-        this.coverSide = coverSide;
-        setup();
-        invalidate();
-    }
-
     public float getCoverCenterX() {
         return coverCenterX;
     }
@@ -288,11 +274,6 @@ public class EmojiReactionView extends ImageView {
         return emojiReactSide;
     }
 
-    public void setEmojiReactSide(int emojiReactSide) {
-        this.emojiReactSide = emojiReactSide;
-        setup();
-    }
-
     public Bitmap getCoverBitmap() {
         return coverBitmap;
     }
@@ -312,6 +293,10 @@ public class EmojiReactionView extends ImageView {
         for (int i = 1; i <= numberOfEmojis; i++) {
             emojiRect.add(new Rect());
         }
+        if (clickedEmojiNumber != -1) {
+            emojiBitmap[clickedEmojiNumber] = getBitmapFromDrawable(getResources().getDrawable(emojiId.get(clickedEmojiNumber)));
+
+        }
         if (mSetupPending) {
             setup();
             mSetupPending = false;
@@ -320,19 +305,16 @@ public class EmojiReactionView extends ImageView {
 
     private void setup() {
         Log.i("point 158", "setup" + getWidth() + " ");
-        if (emojiBitmap != null) {
-            Log.i("point 319", "setup" + emojiBitmap.length);
 
-        }
-        if (emojiId != null) {
-            Log.i("point 323", "setup" + emojiId.size());
-
-        }
         if (!mReady) {
             mSetupPending = true;
             return;
         }
-        Log.i("point mi262", "setup" + getWidth() + " ");
+        if (emojiId == null) {
+            return;
+        }
+
+//        Log.i("point mi262", "setup" + getWidth() + " ");
 
         if (getWidth() == 0 && getHeight() == 0) {
             return;
@@ -350,6 +332,8 @@ public class EmojiReactionView extends ImageView {
         } else if (coverCenterY > 0 && coverCenterY < 1) {
             coverCenterY *= getHeight() - getPaddingBottom();
         }
+
+        coverBitmap = getBitmapFromDrawable(getResources().getDrawable(R.drawable.cover_min));
         coverRect = new Rect((int) (coverCenterX - coverSide / 2), (int) (coverCenterY - coverSide / 2), (int) (coverCenterX + coverSide / 2), (int) (coverCenterY + coverSide / 2));
 //        Log.i("point 168", "here" + centre[0] + " " + centre[1] + " " + radius);
 
@@ -397,7 +381,6 @@ public class EmojiReactionView extends ImageView {
     protected void onDraw(Canvas canvas) {
 //        Log.i("point mi113", "draw" + coverEmojiVisible + circleAnimWorking + clickingAnimWorking + emojiRising);
         Log.i("point 386", "here" + emojiBitmap.length + " " + emojiId.size());
-
         super.onDraw(canvas);
 
         if (coverEmojiVisible)
@@ -608,7 +591,6 @@ public class EmojiReactionView extends ImageView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.i("point mi213", event.getX() + " " + event.getY());
 
         for (int i = 0; i < numberOfEmojis; i++) {
             if (circleAnimWorking && emojiRect.get(i).contains((int) event.getX(), (int) event.getY())) {
@@ -639,9 +621,7 @@ public class EmojiReactionView extends ImageView {
             coverEmojiVisible = true;
             setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
         }
-        return false;
-
-        //TODO: want onclick of user to work, return correctClick && super.onTouchEvent(event)
+        return super.onTouchEvent(event);
     }
 
     @Override
@@ -667,64 +647,27 @@ public class EmojiReactionView extends ImageView {
         setup();
     }
 
-    @Override
-    public void setImageBitmap(Bitmap bm) {
-        super.setImageBitmap(bm);
-        initializeBitmap();
-    }
-
-    @Override
-    public void setImageDrawable(Drawable drawable) {
-        super.setImageDrawable(drawable);
-        initializeBitmap();
-    }
-
-    @Override
-    public void setImageResource(@DrawableRes int resId) {
-        super.setImageResource(resId);
-        initializeBitmap();
-    }
-
-    @Override
-    public void setImageURI(Uri uri) {
-        super.setImageURI(uri);
-        initializeBitmap();
-    }
-
     private Bitmap getBitmapFromDrawable(Drawable drawable) {
+        int side = (coverSide > emojiReactSide) ? coverSide : emojiReactSide;
+//        Log.i("point 696", "getBitmapFromDrawable");
         if (drawable == null) {
             return null;
         }
-
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap();
-        }
-
         try {
             Bitmap bitmap;
-
             if (drawable instanceof ColorDrawable) {
-                bitmap = Bitmap.createBitmap(COLORDRAWABLE_DIMENSION, COLORDRAWABLE_DIMENSION, BITMAP_CONFIG);
+                bitmap = Bitmap.createBitmap(2, 2, Bitmap.Config.ARGB_8888);
             } else {
-                bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), BITMAP_CONFIG);
+                bitmap = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888);
             }
 
-            Canvas canvas = new Canvas(bitmap);
-            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-            drawable.draw(canvas);
+            drawable.setBounds(0, 0, side, side);
+            drawable.draw(new Canvas(bitmap));
             return bitmap;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-
-    }
-
-    private void initializeBitmap() {
-        coverBitmap = getBitmapFromDrawable(getResources().getDrawable(R.drawable.cover_min));
-//        Log.i("point mi430", "initializeBitmap" + coverBitmap.getWidth() + " " + coverBitmap.getHeight());
-
-        setup();
     }
 
     private Rect calculateNewRect(Rect initialRect, int x, int y, int halfSide) {
