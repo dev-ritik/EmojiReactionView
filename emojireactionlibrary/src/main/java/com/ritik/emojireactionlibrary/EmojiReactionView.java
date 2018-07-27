@@ -3,6 +3,8 @@ package com.ritik.emojireactionlibrary;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -14,7 +16,7 @@ import android.graphics.PathMeasure;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -37,6 +39,7 @@ public class EmojiReactionView extends ImageView {
     private boolean mReady;
     private boolean mSetupPending;
     private ArrayList<Integer> emojiId = new ArrayList<>();
+    private Context context;
 
     //coverEmoji
     private Rect coverRect = new Rect();
@@ -66,10 +69,9 @@ public class EmojiReactionView extends ImageView {
     private ArrayList<RisingEmoji> risingEmojis = new ArrayList<>();
     private int numberOfRisers = 24;
     private boolean emojiRising;
-    private ExecuteAsync task;
     private Timer emojiRisingTimer;
-    int vanished = 0;
-    boolean startDisappear = false;
+    private int vanished = 0;
+    private boolean startDisappear = false;
 
     public EmojiReactionView(Context context) {
         super(context);
@@ -82,6 +84,7 @@ public class EmojiReactionView extends ImageView {
 
     public EmojiReactionView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        this.context = context;
         this.initBaseXMLAttrs(context, attrs);
 
         init();
@@ -283,6 +286,10 @@ public class EmojiReactionView extends ImageView {
         return coverEmojiVisible;
     }
 
+    public void setOnEmojiClickListener(@Nullable ClickInterface l) {
+        this.mClickInterface = l;
+    }
+
     private void init() {
         Log.i("point mi73", "init");
         mReady = true;
@@ -371,10 +378,6 @@ public class EmojiReactionView extends ImageView {
             pms[i - 1] = new PathMeasure(emojiPath1, false);
         }
 
-    }
-
-    public void setOnEmojiClickListener(@Nullable ClickInterface l) {
-        this.mClickInterface = l;
     }
 
     @Override
@@ -534,26 +537,15 @@ public class EmojiReactionView extends ImageView {
             emojiRisingTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-//                Log.i("point ma255", "run started");
-                    task = new ExecuteAsync();
-                    task.execute();
+                    riseEmoji();
+                    ((Activity) context).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            invalidate();
+                        }
+                    });
                 }
-            }, 5, 100);
-        }
-
-    }
-
-    private class ExecuteAsync extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            riseEmoji();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            invalidate();
+            }, 5, 50);
         }
 
     }
@@ -592,6 +584,7 @@ public class EmojiReactionView extends ImageView {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         Log.i("point 600", "onTouchEvent" + event.getX() + " y " + event.getY());
