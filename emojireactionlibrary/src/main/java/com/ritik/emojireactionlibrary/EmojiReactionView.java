@@ -312,7 +312,7 @@ public class EmojiReactionView extends ImageView {
             return;
         }
 
-//        Log.i("point mi262", "setup" + getWidth() + " ");
+        Log.i("point mi262", "setup" + getWidth() + " ");
 
         if (getWidth() == 0 && getHeight() == 0) {
             return;
@@ -338,7 +338,6 @@ public class EmojiReactionView extends ImageView {
             coverCenterY *= getHeight() - getPaddingBottom();
         }
 
-//        TODO: REDUCE SIZE OF FILE
         coverBitmap = getBitmapFromDrawable(getResources().getDrawable(R.drawable.cover_min));
         coverRect = new Rect((int) (coverCenterX - coverSide / 2), (int) (coverCenterY - coverSide / 2), (int) (coverCenterX + coverSide / 2), (int) (coverCenterY + coverSide / 2));
     }
@@ -381,7 +380,7 @@ public class EmojiReactionView extends ImageView {
     @Override
     protected void onDraw(Canvas canvas) {
 //        Log.i("point mi113", "draw" + coverEmojiVisible + circleAnimWorking + clickingAnimWorking + emojiRising);
-        Log.i("point 386", "here" + emojiBitmap.length + " " + emojiId.size());
+//        Log.i("point 386", "here" + emojiBitmap.length + " " + emojiId.size());
         super.onDraw(canvas);
 
         if (coverEmojiVisible)
@@ -401,7 +400,6 @@ public class EmojiReactionView extends ImageView {
         }
         if (clickingAnimWorking) {
             if (clickedEmojiNumber != -1) {
-                //TODO: clicking effect on encircling circle
                 canvas.drawCircle(emojiMovingPoint[clickedEmojiNumber][0], emojiMovingPoint[clickedEmojiNumber][1], clickedRadius, clickedPaint);
             }
             for (int i = 0; i < numberOfEmojis; i++) {
@@ -525,7 +523,6 @@ public class EmojiReactionView extends ImageView {
             Rect risingRect = calculateNewRect(new Rect(), new Random().nextInt(getWidth() - getPaddingLeft() - getPaddingRight() + 1), getHeight() - getPaddingBottom() + new Random().nextInt(300), 20);
             risingEmojis.add(new RisingEmoji(risingRect, new Random().nextInt(10) + 20, 300, new Random().nextInt(6) + emojisRisingSpeed));
         }
-        Log.i("Point 539", "emojiRisinginit" + risingEmojis.size());
 
         emojiRisingAnim();
     }
@@ -597,6 +594,7 @@ public class EmojiReactionView extends ImageView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Log.i("point 600", "onTouchEvent" + event.getX() + " y " + event.getY());
 
         for (int i = 0; i < numberOfEmojis; i++) {
             if (circleAnimWorking && emojiRect[i].contains((int) event.getX(), (int) event.getY())) {
@@ -614,6 +612,11 @@ public class EmojiReactionView extends ImageView {
                 return false;
             }
         }
+        if (circleAnimWorking && clickedEmojiNumber != -1 && clickedOnRing(event.getX(), event.getY(), clickedEmojiNumber)) {
+            mClickInterface.onEmojiUnclicked(clickedEmojiNumber, (int) event.getX(), (int) event.getY());
+            startUnclickingAnim(clickedEmojiNumber);
+            return false;
+        }
 
         if (coverEmojiVisible && coverRect.contains((int) event.getX(), (int) event.getY())) {
             coverEmojiVisible = false;
@@ -628,6 +631,10 @@ public class EmojiReactionView extends ImageView {
             setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
         }
         return super.onTouchEvent(event);
+    }
+
+    private boolean clickedOnRing(float x, float y, int clickedEmojiNumber) {
+        return (Math.pow(x - emojiMovingPoint[clickedEmojiNumber][0], 2) + Math.pow(y - emojiMovingPoint[clickedEmojiNumber][1], 2) <= Math.pow(clickedRadius, 2));
     }
 
     @Override
