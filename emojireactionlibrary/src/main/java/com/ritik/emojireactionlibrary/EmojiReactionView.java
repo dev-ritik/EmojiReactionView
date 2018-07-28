@@ -54,7 +54,6 @@ public class EmojiReactionView extends ImageView {
     private float[] centre = new float[2];
     private float radius = 150;
     private int emojiReactSide = 70;
-    private Rect[] emojiRect;
     private int[][] emojiMovingPoint;
     private PathMeasure[] pms;
     private boolean circleAnimWorking;
@@ -295,12 +294,8 @@ public class EmojiReactionView extends ImageView {
         Log.i("point mi73", "init" + densityFactor + " " + getWidth());
         mReady = true;
         clickedPaint.setColor(Color.argb(125, 185, 185, 185));
-        emojiRect = new Rect[numberOfEmojis];
-        for (int i = 0; i < numberOfEmojis; i++) {
-            emojiRect[i] = new Rect();
-        }
         if (clickedEmojiNumber != -1) {
-            emojiBitmap[clickedEmojiNumber] = getBitmapFromId(emojiId.get(clickedEmojiNumber));
+            emojiBitmap[clickedEmojiNumber] = getBitmapFromId(emojiId.get(clickedEmojiNumber), emojiReactSide);
         }
 
         multiplyDensity();
@@ -358,7 +353,7 @@ public class EmojiReactionView extends ImageView {
             coverCenterY *= getHeight() - getPaddingBottom();
         }
 
-        coverBitmap = getBitmapFromId(R.drawable.cover_min);
+        coverBitmap = getBitmapFromId(R.drawable.cover_min, coverSide);
         coverRect = new Rect((int) (coverCenterX - coverSide / 2), (int) (coverCenterY - coverSide / 2), (int) (coverCenterX + coverSide / 2), (int) (coverCenterY + coverSide / 2));
     }
 
@@ -393,6 +388,8 @@ public class EmojiReactionView extends ImageView {
 
     }
 
+//    Matrix m = new Matrix();
+
     @Override
     protected void onDraw(Canvas canvas) {
 //        Log.i("point mi113", "draw" + coverEmojiVisible + circleAnimWorking + clickingAnimWorking + emojiRising);
@@ -404,10 +401,10 @@ public class EmojiReactionView extends ImageView {
 //        coverEmojiVisible = false;
 //        clickingAnimWorking = false;
 //        emojiRising = false;
-
-//      if scale ==1, translate target-half side
-//        canvas.drawRect(calculateNewRect(new Rect(), 200, 200, 50), clickedPaint);
-//        canvas.drawCircle((int) centre[0], (int) centre[1], 50, clickedPaint);
+//        m.setScale(2,2);
+//        m.postTranslate(200 - 2*35, 200 - 2*35);
+//        m.postRotate(98, 200, 200);
+//        canvas.drawBitmap(coverBitmap, m, null);
 
         if (coverEmojiVisible)
             if (clickedEmojiNumber == -1)
@@ -420,7 +417,6 @@ public class EmojiReactionView extends ImageView {
             }
             for (int i = 0; i < numberOfEmojis; i++) {
                 canvas.drawBitmap(emojiBitmap[i], emojiMatrix.get(i), null);
-//                canvas.drawBitmap(emojiBitmap[i], null, calculateNewRect(emojiRect[i], emojiMovingPoint[i][0], emojiMovingPoint[i][1], emojiReactSide / 2), null);
             }
             startCircleAnim();
         }
@@ -429,7 +425,7 @@ public class EmojiReactionView extends ImageView {
                 canvas.drawCircle(emojiMovingPoint[clickedEmojiNumber][0], emojiMovingPoint[clickedEmojiNumber][1], clickedRadius, clickedPaint);
             }
             for (int i = 0; i < numberOfEmojis; i++) {
-                canvas.drawBitmap(emojiBitmap[i], null, emojiRect[i], null);
+                canvas.drawBitmap(emojiBitmap[i], emojiMatrix.get(i), null);
             }
         }
 
@@ -449,33 +445,16 @@ public class EmojiReactionView extends ImageView {
     }
 
     private void startCircleAnim() {
-        //TODO: rotate!!
-
-        for (int i = 0; i < numberOfEmojis; i++) {
-            if (emojiBitmap[i] == null) {
-                emojiBitmap[i] = getBitmapFromId(emojiId.get(i));
-//                Log.i("point 468", "startCircleAnim" + emojiBitmap[i].getWidth() + " " + emojiBitmap[i].getHeight());
-            }
-            Matrix matrix = new Matrix();
-
-//      if scale ==1, translate target-half side
-            emojiMatrix.add(matrix);
-//            float scale;
-//            float dx = 0;
-//            float dy = 0;
-//            if (emojiBitmap[i].getWidth() * emojiRect[i].height() > emojiRect[i].width() * emojiBitmap[i].getHeight()) {
-//                scale = emojiRect[i].height() / (float) emojiBitmap[i].getHeight();
-//                dx = (emojiRect[i].width() - emojiBitmap[i].getWidth() * scale) * 0.5f;
-//            } else {
-//                scale = emojiRect[i].width() / (float) emojiBitmap[i].getWidth();
-//                dy = (emojiRect[i].height() - emojiBitmap[i].getHeight() * scale) * 0.5f;
-//            }
-
-        }
-
-
         float[] emojiMovingPointFloat = new float[2];
         int[] emojiMovingPointInt;
+        Matrix matrix;
+        for (int i = 0; i < numberOfEmojis; i++) {
+            if (emojiBitmap[i] == null) {
+                emojiBitmap[i] = getBitmapFromId(emojiId.get(i), emojiReactSide);
+            }
+            matrix = new Matrix();
+            emojiMatrix.add(matrix);
+        }
 
         if (emojiMovingPoint == null) {
             emojiMovingPoint = new int[numberOfEmojis][2];
@@ -500,7 +479,6 @@ public class EmojiReactionView extends ImageView {
 //                emojiMatrix.get(i).setScale(scale, scale);
                 emojiMatrix.get(i).postTranslate(emojiMovingPoint[i][0] - emojiReactSide / 2, emojiMovingPoint[i][1] - emojiReactSide / 2);
                 emojiMatrix.get(i).postRotate((20 - iCurStep) * (80 - 160 * (i + 1) / (numberOfEmojis + 1)) / 20, emojiMovingPoint[i][0], emojiMovingPoint[i][1]);
-                emojiRect[i] = calculateNewRect(emojiRect[i], emojiMovingPoint[i][0], emojiMovingPoint[i][1], emojiReactSide / 2);
             }
             iCurStep++;
             setColorFilter(Color.rgb(255 - 6 * iCurStep, 255 - 6 * iCurStep, 255 - 6 * iCurStep), android.graphics.PorterDuff.Mode.MULTIPLY);
@@ -518,12 +496,13 @@ public class EmojiReactionView extends ImageView {
     private void startClickingAnim(final int clickedIndex) {
         circleAnimWorking = false;
         clickingAnimWorking = true;
-        ValueAnimator animator = ValueAnimator.ofInt(0, 2);
+        ValueAnimator animator = ValueAnimator.ofFloat(1, 0.4f);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                emojiRect[clickedIndex].inset((int) valueAnimator.getAnimatedValue(), (int) valueAnimator.getAnimatedValue());
 //                Log.i("Point 240", "va" + valueAnimator.getAnimatedValue());
+                emojiMatrix.get(clickedIndex).setScale((float) valueAnimator.getAnimatedValue(), (float) valueAnimator.getAnimatedValue());
+                emojiMatrix.get(clickedIndex).postTranslate(emojiMovingPoint[clickedIndex][0] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2, emojiMovingPoint[clickedIndex][1] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2);
                 invalidate();
             }
         });
@@ -536,7 +515,7 @@ public class EmojiReactionView extends ImageView {
                 emojiRisinginit();
             }
         });
-        animator.setDuration(800);
+        animator.setDuration(600);
         animator.setInterpolator(new AccelerateInterpolator());
         animator.start();
     }
@@ -544,13 +523,14 @@ public class EmojiReactionView extends ImageView {
     private void startUnclickingAnim(final int clickedIndex) {
         circleAnimWorking = false;
         clickingAnimWorking = true;
-        ValueAnimator animator = ValueAnimator.ofInt(0, 2);
+        ValueAnimator animator = ValueAnimator.ofFloat(1, 0.4f);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                emojiRect[clickedIndex].inset((int) valueAnimator.getAnimatedValue(), (int) valueAnimator.getAnimatedValue());
-//                Log.i("Point 270", "va" + valueAnimator.getAnimatedValue());
-                clickedRadius = 50 - (int) valueAnimator.getAnimatedValue() * 8;
+                emojiMatrix.get(clickedIndex).setScale((float) valueAnimator.getAnimatedValue(), (float) valueAnimator.getAnimatedValue());
+                emojiMatrix.get(clickedIndex).postTranslate(emojiMovingPoint[clickedIndex][0] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2, emojiMovingPoint[clickedIndex][1] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2);
+                //                Log.i("Point 270", "va" + valueAnimator.getAnimatedValue());
+                clickedRadius = (int) (50 * (float) valueAnimator.getAnimatedValue());
                 invalidate();
             }
         });
@@ -564,7 +544,7 @@ public class EmojiReactionView extends ImageView {
                 clickedRadius = 50;
             }
         });
-        animator.setDuration(800);
+        animator.setDuration(600);
         animator.setInterpolator(new AccelerateInterpolator());
         animator.start();
     }
@@ -575,7 +555,6 @@ public class EmojiReactionView extends ImageView {
             Rect risingRect = calculateNewRect(new Rect(), new Random().nextInt(getWidth() - getPaddingLeft() - getPaddingRight() + 1), getHeight() - getPaddingBottom() + new Random().nextInt(300), 20);
             risingEmojis.add(new RisingEmoji(risingRect, new Random().nextInt(10) + 20, 300, new Random().nextInt(6) + emojisRisingSpeed));
         }
-
         emojiRisingAnim();
     }
 
@@ -639,7 +618,7 @@ public class EmojiReactionView extends ImageView {
         Log.i("point 600", "onTouchEvent" + event.getX() + " y " + event.getY());
 
         for (int i = 0; i < numberOfEmojis; i++) {
-            if (circleAnimWorking && emojiRect[i].contains((int) event.getX(), (int) event.getY())) {
+            if (circleAnimWorking && clickedOnEmojiReact(i, event.getX(), event.getY())) {
 
                 if (clickedEmojiNumber == i) {
                     mClickInterface.onEmojiUnclicked(i, (int) event.getX(), (int) event.getY());
@@ -675,6 +654,10 @@ public class EmojiReactionView extends ImageView {
         return super.onTouchEvent(event);
     }
 
+    private boolean clickedOnEmojiReact(int i, double x, double y) {
+        return (Math.abs(x - emojiMovingPoint[i][0]) < emojiReactSide / 2 && Math.abs(y - emojiMovingPoint[i][1]) < emojiReactSide / 2);
+    }
+
     private boolean clickedOnRing(float x, float y, int clickedEmojiNumber) {
         return (Math.pow(x - emojiMovingPoint[clickedEmojiNumber][0], 2) + Math.pow(y - emojiMovingPoint[clickedEmojiNumber][1], 2) <= Math.pow(clickedRadius, 2));
     }
@@ -702,8 +685,7 @@ public class EmojiReactionView extends ImageView {
         setup();
     }
 
-    private Bitmap getBitmapFromId(int id) {
-        int side = (coverSide > emojiReactSide) ? coverSide : emojiReactSide;
+    private Bitmap getBitmapFromId(int id, int side) {
         Log.i("point 696", "getBitmapFromId" + side);
         Drawable drawable = getResources().getDrawable(id);
         if (drawable == null) {
