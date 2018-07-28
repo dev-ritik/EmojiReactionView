@@ -10,6 +10,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
@@ -52,16 +53,17 @@ public class EmojiReactionView extends ImageView {
     //circleAnim
     private float[] centre = new float[2];
     private float radius = 150;
-    private int emojiReactSide = 80;
+    private int emojiReactSide = 200;
     private Rect[] emojiRect;
     private int[][] emojiMovingPoint;
     private PathMeasure[] pms;
     private boolean circleAnimWorking;
+    private ArrayList<Matrix> emojiMatrix = new ArrayList<>();
 
     //clicking/unclicking
     private int clickedRadius = 50;
     private Paint clickedPaint = new Paint();
-    int iCurStep = 0;// current step
+    int iCurStep = 1;// current step
     private boolean clickingAnimWorking;
 
     //risingEmoji
@@ -395,19 +397,39 @@ public class EmojiReactionView extends ImageView {
     protected void onDraw(Canvas canvas) {
 //        Log.i("point mi113", "draw" + coverEmojiVisible + circleAnimWorking + clickingAnimWorking + emojiRising);
 //        Log.i("point 386", "here" + emojiBitmap.length + " " + emojiId.size());
+        Log.i("point mi113", "draw");
         super.onDraw(canvas);
 
+//        circleAnimWorking = false;
+//        coverEmojiVisible = false;
+//        clickingAnimWorking = false;
+//        emojiRising = false;
+
+//        Matrix matrix = new Matrix();
+//        Log.i("point 410", "here" + coverBitmap.getWidth() + " " + coverBitmap.getHeight());
+
+//        matrix.setScale(0.5f, 0.5f);
+//      if scale ==1, translate target-half side
+//        matrix.postTranslate(200 - 50, 200 - 50);
+//        matrix.postRotate(90, 200, 200);
+//        canvas.drawBitmap(coverBitmap, matrix, null);
+//        canvas.drawCircle(200, 200, 30, clickedPaint);
+//        canvas.drawRect(calculateNewRect(new Rect(), 200, 200, 50), clickedPaint);
+        canvas.drawCircle((int) centre[0], (int) centre[1], 50, clickedPaint);
+
         if (coverEmojiVisible)
-            if (clickedEmojiNumber == -1)
+        if (clickedEmojiNumber == -1)
                 canvas.drawBitmap(coverBitmap, null, coverRect, null);
             else canvas.drawBitmap(emojiBitmap[clickedEmojiNumber], null, coverRect, null);
 
         if (circleAnimWorking) {
+            canvas.drawCircle((int) emojiMovingPoint[0][0], (int) emojiMovingPoint[0][1], 50, clickedPaint);
             if (clickedEmojiNumber != -1) {
                 canvas.drawCircle(emojiMovingPoint[clickedEmojiNumber][0], emojiMovingPoint[clickedEmojiNumber][1], clickedRadius, clickedPaint);
             }
             for (int i = 0; i < numberOfEmojis; i++) {
-                canvas.drawBitmap(emojiBitmap[i], null, calculateNewRect(emojiRect[i], emojiMovingPoint[i][0], emojiMovingPoint[i][1], emojiReactSide / 2), null);
+                canvas.drawBitmap(emojiBitmap[i], emojiMatrix.get(i), null);
+//                canvas.drawBitmap(emojiBitmap[i], null, calculateNewRect(emojiRect[i], emojiMovingPoint[i][0], emojiMovingPoint[i][1], emojiReactSide / 2), null);
             }
             startCircleAnim();
         }
@@ -437,11 +459,30 @@ public class EmojiReactionView extends ImageView {
 
     private void startCircleAnim() {
         //TODO: rotate!!
+
         for (int i = 0; i < numberOfEmojis; i++) {
             if (emojiBitmap[i] == null) {
                 emojiBitmap[i] = getBitmapFromId(emojiId.get(i));
+//                Log.i("point 468", "startCircleAnim" + emojiBitmap[i].getWidth() + " " + emojiBitmap[i].getHeight());
             }
+            Matrix matrix = new Matrix();
+
+//      if scale ==1, translate target-half side
+            emojiMatrix.add(matrix);
+//            float scale;
+//            float dx = 0;
+//            float dy = 0;
+//            if (emojiBitmap[i].getWidth() * emojiRect[i].height() > emojiRect[i].width() * emojiBitmap[i].getHeight()) {
+//                scale = emojiRect[i].height() / (float) emojiBitmap[i].getHeight();
+//                dx = (emojiRect[i].width() - emojiBitmap[i].getWidth() * scale) * 0.5f;
+//            } else {
+//                scale = emojiRect[i].width() / (float) emojiBitmap[i].getWidth();
+//                dy = (emojiRect[i].height() - emojiBitmap[i].getHeight() * scale) * 0.5f;
+//            }
+
         }
+
+
         float[] emojiMovingPointFloat = new float[2];
         int[] emojiMovingPointInt;
 
@@ -450,6 +491,7 @@ public class EmojiReactionView extends ImageView {
             for (int i = 0; i < numberOfEmojis; i++) {
                 emojiMovingPointInt = new int[2];
                 emojiMovingPoint[i] = emojiMovingPointInt;
+
             }
         }
 
@@ -458,7 +500,13 @@ public class EmojiReactionView extends ImageView {
         if (iCurStep <= 20) {
             for (int i = 0; i < numberOfEmojis; i++) {
                 pms[i].getPosTan(fSegmentLen * iCurStep, emojiMovingPointFloat, null);
+//                Log.i("point 510", emojiMovingPointFloat[0] + " " + emojiMovingPointFloat[1]+"i");
                 emojiMovingPoint[i] = convertFloatArrayToIntArray(emojiMovingPointFloat, emojiMovingPoint[i]);
+                emojiMatrix.set(i, new Matrix());
+                emojiMatrix.get(i).setScale(0.5f, 0.5f);
+                emojiMatrix.get(i).postTranslate(emojiMovingPoint[i][0] - 50, emojiMovingPoint[i][1] - 50);
+                emojiMatrix.get(i).postRotate((20 - iCurStep) * (80 - 160 * (i + 1) / (numberOfEmojis + 1)) / 20, emojiMovingPoint[i][0], emojiMovingPoint[i][1]);
+
             }
             iCurStep++;
             setColorFilter(Color.rgb(255 - 6 * iCurStep, 255 - 6 * iCurStep, 255 - 6 * iCurStep), android.graphics.PorterDuff.Mode.MULTIPLY);
@@ -662,7 +710,7 @@ public class EmojiReactionView extends ImageView {
 
     private Bitmap getBitmapFromId(int id) {
         int side = (coverSide > emojiReactSide) ? coverSide : emojiReactSide;
-//        Log.i("point 696", "getBitmapFromId");
+        Log.i("point 696", "getBitmapFromId" + side);
         Drawable drawable = getResources().getDrawable(id);
         if (drawable == null) {
             return null;
