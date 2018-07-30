@@ -54,6 +54,8 @@
             android:scaleType="fitXY"
             android:src="@drawable/android1_min"
             app:emojis="@array/emoji"
+            android:padding="50dp"
+            android:background="@color/colorPrimaryDark"
             app:emojis_rising_speed="20dp" />
 
         <!--<ImageView-->
