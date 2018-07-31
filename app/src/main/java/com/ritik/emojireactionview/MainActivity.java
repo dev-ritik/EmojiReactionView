@@ -42,21 +42,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void test(View view) {
 //        myImage.test();
-        Log.i("point 45", myImage.getCentre()[0] + " " + myImage.getCentre()[1]);
-        Log.i("point 46", myImage.getRadius() + " " + myImage.getClickedEmojiNumber());
-        Log.i("point 47", myImage.getNumberOfEmojis() + " " + myImage.getEmojisRisingSpeed());
-        Log.i("point 48", myImage.getCoverRect().left + " " + myImage.getCoverRect().right);
+//        Log.i("point 45", myImage.getCentre()[0] + " " + myImage.getCentre()[1]);
+//        Log.i("point 46", myImage.getRadius() + " " + myImage.getClickedEmojiNumber());
+//        Log.i("point 47", myImage.getNumberOfEmojis() + " " + myImage.getEmojisRisingSpeed());
+//        Log.i("point 48", myImage.getCoverRect().left + " " + myImage.getCoverRect().right);
         Log.i("point 49", myImage.getCoverSide() + " " + myImage.getCoverCenterX());
         Log.i("point 50", myImage.getCoverCenterY() + " " + myImage.getEmojiReactSide());
     }
 
-    public void test1(View view) {
-        myImage.test();
-    }
+    public void test1(View view) { }
 
-    public void test2(View view) {
-    }
-
-    public void test3(View view) {
-    }
 }

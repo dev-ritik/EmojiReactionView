@@ -41,32 +41,33 @@ public class EmojiReactionView extends ImageView {
     private float densityFactor = getResources().getDisplayMetrics().density;
     private int availableHeight = 0;
     private int availableWidth = 0;
+    private int smallerDimension = 0;
 
     //coverEmoji
     private Rect coverRect = new Rect();
-    private int coverSide = 70;
-    private float[] coverCenter = new float[2];
+    private int coverSide = (int) (50 * densityFactor);
+    private int[] coverCenter = new int[]{(int) (30 * densityFactor), 0};
     private Bitmap coverBitmap;
     private boolean coverEmojiVisible;
 
     //circleAnim
     private float[] circleCentre = new float[2];
-    private float circleRadius = 150;
-    private int emojiReactSide = 70;
+    private int circleRadius = -1;
+    private int emojiReactSide = (int) (50 * densityFactor);
     private int[][] emojiMovingPoint;
     private PathMeasure[] pms;
     private boolean circleAnimWorking;
     private ArrayList<Matrix> emojiMatrix = new ArrayList<>();
 
     //clicking/unclicking
-    private int clickedRadius = 50;
+    private int clickedRadius;
     private Paint clickedPaint = new Paint();
     int iCurStep = 1;// current step
     private boolean clickingAnimWorking;
 
     //risingEmoji
-    private int emojisRisingSpeed = 2;
-    private float emojisRisingHeight = 350;
+    private int emojisRisingSpeed = (int) (15 * densityFactor);
+    private float emojisRisingHeight = -1;
     private ArrayList<RisingEmoji> risingEmojis = new ArrayList<>();
     private int numberOfRisers = 24;
     private boolean emojiRising;
@@ -98,10 +99,11 @@ public class EmojiReactionView extends ImageView {
         final int N = arr.getIndexCount();
         for (int i = 0; i < N; ++i) {
             int attr = arr.getIndex(i);
-//            Log.i("point mi92", "attrs" + i);
+            Log.i("point 102", "attrs" + i);
 
             if (attr == R.styleable.EmojiReactionView_emojis) {
                 final TypedArray resourceArray = context.getResources().obtainTypedArray(arr.getResourceId(R.styleable.EmojiReactionView_emojis, 0));
+                Log.i("point 106", "attrs");
                 for (int j = 0; j < resourceArray.length(); j++) {
                     emojiId.add(resourceArray.getResourceId(j, 0));
                 }
@@ -113,43 +115,37 @@ public class EmojiReactionView extends ImageView {
                 else {
                     circleCentre[0] = checkFraction(arr.getFraction(attr, 1, 1, -1));
                 }
-                Log.i("point 107", "here" + circleCentre[0]);
+//                Log.i("point 107", "here" + circleCentre[0]);
 
             } else if (attr == R.styleable.EmojiReactionView_center_Y) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
                     circleCentre[1] = arr.getDimensionPixelSize(attr, -1);
                 else
                     circleCentre[1] = checkFraction(arr.getFraction(attr, 1, 1, -1));
-                Log.i("point 114", "here" + circleCentre[1]);
+//                Log.i("point 114", "here" + circleCentre[1]);
             } else if (attr == R.styleable.EmojiReactionView_radius) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
                     circleRadius = arr.getDimensionPixelSize(attr, -1);
-                else
-                    circleRadius = checkFraction(arr.getFraction(attr, 1, 1, -1));
 //                Log.i("point mi117", circleRadius + "");
 
             } else if (attr == R.styleable.EmojiReactionView_cover_Center_X) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    coverCenter[0] = arr.getDimensionPixelSize(attr, -1);
-                else
-                    coverCenter[0] = checkFraction(arr.getFraction(attr, 1, 1, -1));
+                    coverCenter[0] = arr.getDimensionPixelSize(attr, coverCenter[0]);
 //                Log.i("point mi117", circleRadius + "");
 
             } else if (attr == R.styleable.EmojiReactionView_cover_Center_Y) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    coverCenter[1] = arr.getDimensionPixelSize(attr, -1);
-                else
-                    coverCenter[1] = checkFraction(arr.getFraction(attr, 1, 1, -1));
+                    coverCenter[1] = 0 - arr.getDimensionPixelSize(attr, 0);
 //                Log.i("point mi117", circleRadius + "");
 
             } else if (attr == R.styleable.EmojiReactionView_cover_side) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    coverSide = arr.getDimensionPixelSize(attr, -1);
+                    coverSide = arr.getDimensionPixelSize(attr, coverSide);
 //                Log.i("point mi117", circleRadius + "");
 
             } else if (attr == R.styleable.EmojiReactionView_emoji_react_side) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    emojiReactSide = arr.getDimensionPixelSize(attr, -1);
+                    emojiReactSide = arr.getDimensionPixelSize(attr, emojiReactSide);
 //                Log.i("point mi117", circleRadius + "");
 
             } else if (attr == R.styleable.EmojiReactionView_emojis_rising_speed) {
@@ -185,18 +181,8 @@ public class EmojiReactionView extends ImageView {
         return circleCentre;
     }
 
-    public void setCentre(float[] circleCentre) {
-        this.circleCentre = circleCentre;
-        setPathCircle();
-    }
-
     public float getRadius() {
         return circleRadius;
-    }
-
-    public void setRadius(float circleRadius) {
-        this.circleRadius = circleRadius;
-        setPathCircle();
     }
 
     public int getClickedEmojiNumber() {
@@ -236,10 +222,6 @@ public class EmojiReactionView extends ImageView {
         return emojisRisingSpeed;
     }
 
-    public void setEmojisRisingSpeed(int emojisRisingSpeed) {
-        this.emojisRisingSpeed = emojisRisingSpeed;
-    }
-
     public Rect getCoverRect() {
         return coverRect;
     }
@@ -252,20 +234,8 @@ public class EmojiReactionView extends ImageView {
         return coverCenter[0];
     }
 
-    public void setCoverCenterX(float coverCenterX) {
-        coverCenter[0] = coverCenterX;
-        setCoverRect();
-        invalidate();
-    }
-
     public float getCoverCenterY() {
         return coverCenter[1];
-    }
-
-    public void setCoverCenterY(float coverCenterY) {
-        coverCenter[1] = coverCenterY;
-        setCoverRect();
-        invalidate();
     }
 
     public int getEmojiReactSide() {
@@ -316,19 +286,24 @@ public class EmojiReactionView extends ImageView {
         if (emojiId == null) {
             return;
         }
-
-        Log.i("point mi262", "setup" + getWidth() + " ");
+        if (numberOfEmojis == 0) {
+            coverEmojiVisible = false;
+            circleAnimWorking = false;
+            clickingAnimWorking = false;
+            emojiRising = false;
+            return;
+        }
 
         if (getWidth() == 0 && getHeight() == 0) {
             return;
         } else {
-            initDimensions();
+            initDefaultDimensions();
         }
         Log.i("point mi273", "here" + getHeight() + " " + densityFactor);
 //        Log.i("point 204", "here" + coverCenter[0] + " " + coverCenter[1] + " " + coverSide);
 
         if (emojisRisingHeight == -1 || emojisRisingHeight == 0) {
-            emojisRisingHeight = 400;
+            emojisRisingHeight = getHeight() / 2;
         } else if (emojisRisingHeight > 0 && emojisRisingHeight < 1) {
             emojisRisingHeight *= getHeight();
         }
@@ -338,20 +313,21 @@ public class EmojiReactionView extends ImageView {
         coverEmojiVisible = true;
     }
 
+    private void initDefaultDimensions() {
+        availableHeight = getHeight() - getPaddingTop() - getPaddingBottom();
+        availableWidth = getWidth() - getPaddingLeft() - getPaddingRight();
+        smallerDimension = getHeight() > getWidth() ? getWidth() : getHeight();
+    }
+
     private void setCoverRect() {
-        if (coverCenter[0] == -1 || coverCenter[0] == 0) {
-            coverCenter[0] = 10 + coverSide / 2;
-        } else if (coverCenter[0] > 0 && coverCenter[0] < 1) {
-            coverCenter[0] *= getWidth();
-        }
-        if (coverCenter[1] == -1 || coverCenter[1] == 0) {
-            coverCenter[1] = getHeight() - coverSide / 2 - 10;
-        } else if (coverCenter[1] > 0 && coverCenter[1] < 1) {
-            coverCenter[1] *= getHeight();
+        if (coverCenter[1] == 0) {
+            coverCenter[1] = getHeight() - (int) (30 * densityFactor);
+        } else if (coverCenter[1] < 0) {
+            coverCenter[1] = getHeight() + coverCenter[1];
         }
 
         coverBitmap = getBitmapFromId(R.drawable.cover_min, coverSide);
-        coverRect = new Rect((int) (coverCenter[0] - coverSide / 2), (int) (coverCenter[1] - coverSide / 2), (int) (coverCenter[0] + coverSide / 2), (int) (coverCenter[1] + coverSide / 2));
+        coverRect = new Rect((coverCenter[0] - coverSide / 2), (coverCenter[1] - coverSide / 2), (coverCenter[0] + coverSide / 2), (coverCenter[1] + coverSide / 2));
     }
 
     private void setPathCircle() {
@@ -366,12 +342,13 @@ public class EmojiReactionView extends ImageView {
             circleCentre[1] *= getHeight();
         }
 
-        if (circleRadius == -1)
-            circleRadius = 150;
-        else if (circleRadius <= 1 && circleRadius >= 0) {
-            circleRadius *= getWidth();
+        if (circleRadius == -1) {
+            circleRadius = (int) (smallerDimension / 2 - 20 * densityFactor);
+        } else {
+            circleRadius = smallerDimension / 2 > circleRadius ? circleRadius : smallerDimension / 2;
         }
 
+        clickedRadius = (int) (emojiReactSide * 0.7);
         double angle = Math.PI / (numberOfEmojis + 1);
 
         Path emojiPath1;
@@ -528,7 +505,7 @@ public class EmojiReactionView extends ImageView {
                 emojiMatrix.get(clickedIndex).setScale((float) valueAnimator.getAnimatedValue(), (float) valueAnimator.getAnimatedValue());
                 emojiMatrix.get(clickedIndex).postTranslate(emojiMovingPoint[clickedIndex][0] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2, emojiMovingPoint[clickedIndex][1] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2);
                 //                Log.i("Point 270", "va" + valueAnimator.getAnimatedValue());
-                clickedRadius = (int) (50 * (float) valueAnimator.getAnimatedValue());
+                clickedRadius = (int) (emojiReactSide * (float) valueAnimator.getAnimatedValue() * 0.7);
                 invalidate();
             }
         });
@@ -539,7 +516,7 @@ public class EmojiReactionView extends ImageView {
                 clickedEmojiNumber = -1;
                 coverEmojiVisible = true;
                 setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
-                clickedRadius = 50;
+                clickedRadius = (int) (emojiReactSide * 0.7);
             }
         });
         animator.setDuration(600);
@@ -550,8 +527,8 @@ public class EmojiReactionView extends ImageView {
     private void emojiRisinginit() {
         emojiRising = true;
         for (int i = 0; i < numberOfRisers; i++) {
-            Rect risingRect = calculateNewRect(new Rect(), new Random().nextInt(getWidth() + 1), getHeight() + new Random().nextInt(350), new Random().nextInt(25) + 20);
-            risingEmojis.add(new RisingEmoji(risingRect, new Random().nextInt(4) + emojisRisingSpeed));
+            Rect risingRect = calculateNewRect(new Rect(), new Random().nextInt(getWidth() + 1), getHeight() + new Random().nextInt(2 * getHeight() / 5), new Random().nextInt(emojiReactSide / 4) + emojiReactSide / 3);
+            risingEmojis.add(new RisingEmoji(risingRect, new Random().nextInt(6) + emojisRisingSpeed));
         }
         emojiRisingAnim();
     }
@@ -669,11 +646,6 @@ public class EmojiReactionView extends ImageView {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         setup();
-    }
-
-    private void initDimensions() {
-        availableHeight = getHeight() - getPaddingTop() - getPaddingBottom();
-        availableWidth = getWidth() - getPaddingLeft() - getPaddingRight();
     }
 
     @Override
