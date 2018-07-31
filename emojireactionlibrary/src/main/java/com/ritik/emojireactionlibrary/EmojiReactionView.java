@@ -31,7 +31,7 @@ import java.util.TimerTask;
 
 import static android.util.TypedValue.TYPE_DIMENSION;
 
-public class EmojiReactionView extends ImageView {
+public class EmojiReactionView extends android.support.v7.widget.AppCompatImageView {
     private ClickInterface mClickInterface;
     private Bitmap[] emojiBitmap;
     private int clickedEmojiNumber = -1;
