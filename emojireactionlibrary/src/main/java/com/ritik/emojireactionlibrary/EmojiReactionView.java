@@ -22,7 +22,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -31,19 +30,22 @@ import java.util.TimerTask;
 
 import static android.util.TypedValue.TYPE_DIMENSION;
 
+/**
+ * This is
+ */
 public class EmojiReactionView extends android.support.v7.widget.AppCompatImageView {
     private ClickInterface mClickInterface;
     private Bitmap[] emojiBitmap;
     private int clickedEmojiNumber = -1;
     private int numberOfEmojis = 0;
-    private ArrayList<Integer> emojiId = new ArrayList<>();
+    private final ArrayList<Integer> emojiId = new ArrayList<>();
     private Context context;
-    private float densityFactor = getResources().getDisplayMetrics().density;
+    private final float densityFactor = getResources().getDisplayMetrics().density;
 
     //coverEmoji
     private Rect coverRect = new Rect();
     private int coverSide = 70;
-    private float[] coverCenter = new float[2];
+    private final float[] coverCenter = new float[2];
     private Bitmap coverBitmap;
     private boolean coverEmojiVisible;
 
@@ -54,18 +56,18 @@ public class EmojiReactionView extends android.support.v7.widget.AppCompatImageV
     private int[][] emojiMovingPoint;
     private PathMeasure[] pms;
     private boolean circleAnimWorking;
-    private ArrayList<Matrix> emojiMatrix = new ArrayList<>();
+    private final ArrayList<Matrix> emojiMatrix = new ArrayList<>();
 
     //clicking/unclicking
     private int clickedRadius = 50;
-    private Paint clickedPaint = new Paint();
-    int iCurStep = 1;// current step
+    private final Paint clickedPaint = new Paint();
+    private int iCurStep = 1;// current step
     private boolean clickingAnimWorking;
 
     //risingEmoji
     private int emojisRisingSpeed = 2;
     private float emojisRisingHeight = 350;
-    private ArrayList<RisingEmoji> risingEmojis = new ArrayList<>();
+    private final ArrayList<RisingEmoji> risingEmojis = new ArrayList<>();
     private int numberOfRisers = 24;
     private boolean emojiRising;
     private Timer emojiRisingTimer;
@@ -89,7 +91,7 @@ public class EmojiReactionView extends android.support.v7.widget.AppCompatImageV
         init();
     }
 
-    final void initBaseXMLAttrs(Context context, AttributeSet attrs) {
+    private void initBaseXMLAttrs(Context context, AttributeSet attrs) {
         final TypedArray arr = context.obtainStyledAttributes(attrs, R.styleable.EmojiReactionView);
 
         Log.i("point mi88", "attrs" + densityFactor);
@@ -654,11 +656,6 @@ public class EmojiReactionView extends android.support.v7.widget.AppCompatImageV
 
     private boolean clickedOnRing(float x, float y, int clickedEmojiNumber) {
         return (Math.pow(x - emojiMovingPoint[clickedEmojiNumber][0], 2) + Math.pow(y - emojiMovingPoint[clickedEmojiNumber][1], 2) <= Math.pow(clickedRadius, 2));
-    }
-
-    @Override
-    public boolean performClick() {
-        return super.performClick();
     }
 
     @Override
