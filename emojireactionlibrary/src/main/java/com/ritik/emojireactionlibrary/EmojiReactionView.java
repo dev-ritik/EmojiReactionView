@@ -98,13 +98,12 @@ public class EmojiReactionView extends ImageView {
         final int N = arr.getIndexCount();
         for (int i = 0; i < N; ++i) {
             int attr = arr.getIndex(i);
-            Log.i("point 102", "attrs" + i);
 
             if (attr == R.styleable.EmojiReactionView_emojis) {
                 final TypedArray resourceArray = context.getResources().obtainTypedArray(arr.getResourceId(R.styleable.EmojiReactionView_emojis, 0));
-                Log.i("point 107", "attrs" + numberOfEmojis);
+//                Log.i("point 107", "attrs" + numberOfEmojis);
                 for (int j = 0; j < resourceArray.length(); j++) {
-                    Log.i("point 111", "attrs");
+//                    Log.i("point 111", "attrs");
                     emojiId.add(resourceArray.getResourceId(j, 0));
                 }
                 numberOfEmojis = emojiId.size();
@@ -135,7 +134,6 @@ public class EmojiReactionView extends ImageView {
 
             } else if (attr == R.styleable.EmojiReactionView_emoji_react_side) {
                 emojiReactSide = arr.getDimensionPixelSize(attr, emojiReactSide);
-//                Log.i("point mi117", circleRadius + "");
 
             } else if (attr == R.styleable.EmojiReactionView_emojis_rising_height) {
                 emojisRisingHeight = checkFraction(arr.getFraction(attr, 1, 1, -1));
@@ -178,15 +176,22 @@ public class EmojiReactionView extends ImageView {
     }
 
     public void setClickedEmojiNumber(int clickedEmojiNumber) {
-        if (this.clickedEmojiNumber == -1) {
-            mClickInterface.onEmojiUnclicked(clickedEmojiNumber, -1, -1);
-        } else if (this.clickedEmojiNumber != clickedEmojiNumber) {
-            mClickInterface.onEmojiUnclicked(this.clickedEmojiNumber, -1, -1);
-            mClickInterface.onEmojiClicked(clickedEmojiNumber, -1, -1);
-        } else {
-            mClickInterface.onEmojiUnclicked(this.clickedEmojiNumber, -1, -1);
-        }
+        if (mClickInterface != null)
+
+            if (clickedEmojiNumber == -1) {
+                mClickInterface.onEmojiUnclicked(clickedEmojiNumber, -1, -1);
+            } else if (this.clickedEmojiNumber == clickedEmojiNumber) {
+                mClickInterface.onEmojiUnclicked(this.clickedEmojiNumber, -1, -1);
+
+            } else if (clickedEmojiNumber >= 0 && clickedEmojiNumber < numberOfEmojis) {
+                mClickInterface.onEmojiUnclicked(this.clickedEmojiNumber, -1, -1);
+                mClickInterface.onEmojiClicked(clickedEmojiNumber, -1, -1);
+            } else throw new IllegalArgumentException("clickedEmojiNumber out of range");
+
         this.clickedEmojiNumber = clickedEmojiNumber;
+        if (emojiBitmap == null) emojiBitmap = new Bitmap[numberOfEmojis];
+        if (clickedEmojiNumber != -1 && emojiBitmap[clickedEmojiNumber] == null)
+            emojiBitmap[clickedEmojiNumber] = getBitmapFromId(emojiId.get(clickedEmojiNumber), emojiReactSide);
         invalidate();
     }
 
@@ -333,7 +338,7 @@ public class EmojiReactionView extends ImageView {
     @Override
     protected void onDraw(Canvas canvas) {
 //        Log.i("point 386", "here" + emojiBitmap.length + " " + emojiId.size());
-        Log.i("point mi113", "draw");
+//        Log.i("point mi113", "draw");
         super.onDraw(canvas);
 
         if (coverEmojiVisible)
@@ -554,20 +559,24 @@ public class EmojiReactionView extends ImageView {
             if (circleAnimWorking && clickedOnEmojiReact(i, event.getX(), event.getY())) {
 
                 if (clickedEmojiNumber == i) {
-                    mClickInterface.onEmojiUnclicked(i, (int) event.getX(), (int) event.getY());
+                    if (mClickInterface != null)
+                        mClickInterface.onEmojiUnclicked(i, (int) event.getX(), (int) event.getY());
                     startUnclickingAnim(clickedEmojiNumber);
                     return false;
                 } else if (clickedEmojiNumber != -1) {
-                    mClickInterface.onEmojiUnclicked(clickedEmojiNumber, (int) event.getX(), (int) event.getY());
+                    if (mClickInterface != null)
+                        mClickInterface.onEmojiUnclicked(clickedEmojiNumber, (int) event.getX(), (int) event.getY());
                 }
 
-                mClickInterface.onEmojiClicked(i, (int) event.getX(), (int) event.getY());
+                if (mClickInterface != null)
+                    mClickInterface.onEmojiClicked(i, (int) event.getX(), (int) event.getY());
                 startClickingAnim(i);
                 return false;
             }
         }
         if (circleAnimWorking && clickedEmojiNumber != -1 && clickedOnRing(event.getX(), event.getY(), clickedEmojiNumber)) {
-            mClickInterface.onEmojiUnclicked(clickedEmojiNumber, (int) event.getX(), (int) event.getY());
+            if (mClickInterface != null)
+                mClickInterface.onEmojiUnclicked(clickedEmojiNumber, (int) event.getX(), (int) event.getY());
             startUnclickingAnim(clickedEmojiNumber);
             return false;
         }

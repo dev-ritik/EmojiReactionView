@@ -34,7 +34,6 @@
         android:background="@color/colorPrimaryDark"
         android:scaleType="centerCrop"
         android:src="@drawable/android1_min"
-        app:set_emoji="0"
         app:emojis="@array/emoji" />
 
     <!--<ImageView-->
