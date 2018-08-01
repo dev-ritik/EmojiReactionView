@@ -18,11 +18,11 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -31,23 +31,44 @@ import java.util.TimerTask;
 
 import static android.util.TypedValue.TYPE_DIMENSION;
 
-public class EmojiReactionView extends ImageView {
+/**
+ * TODO : Add a brief description about the class
+ */
+
+public class EmojiReactionView extends AppCompatImageView {
+
+    /// General variables
+
+    // Click interface for emoji click
     private ClickInterface mClickInterface;
+    // Array of emoji bitmaps
     private Bitmap[] emojiBitmap;
+    // Index of the selected bitmap
     private int clickedEmojiNumber = -1;
+    // Total number of emoji bitmaps
     private int numberOfEmojis = 0;
+    // ArrayList containing all emoji ids to be displayed
     private ArrayList<Integer> emojiId = new ArrayList<>();
+    // Activity context
     private Context context;
-    private float densityFactor = getResources().getDisplayMetrics().density;
+    // Density factor
+    private final float densityFactor = getResources().getDisplayMetrics().density;
+    // Variables for available height and width
     private int availableHeight = 0;
     private int availableWidth = 0;
+    // Variable for getting the dimension height or width, whichever is smaller
     private int smallerDimension = 0;
 
-    //coverEmoji
+    /// Cover emoji variables
+
+    // Cover emoji rect variable
     private Rect coverRect = new Rect();
     private int coverSide = (int) (50 * densityFactor);
+    // Cover emoji center
     private int[] coverCenter = new int[]{(int) (30 * densityFactor), 0};
+    // Cover emoji bitmap
     private Bitmap coverBitmap;
+    // Boolean to visible cover emoji
     private boolean coverEmojiVisible;
 
     //circleAnim
@@ -622,11 +643,6 @@ public class EmojiReactionView extends ImageView {
 
     private boolean clickedOnRing(float x, float y, int clickedEmojiNumber) {
         return (Math.pow(x - emojiMovingPoint[clickedEmojiNumber][0], 2) + Math.pow(y - emojiMovingPoint[clickedEmojiNumber][1], 2) <= Math.pow(clickedRadius, 2));
-    }
-
-    @Override
-    public boolean performClick() {
-        return super.performClick();
     }
 
     @Override
