@@ -18,11 +18,11 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -31,37 +31,74 @@ import java.util.TimerTask;
 
 import static android.util.TypedValue.TYPE_DIMENSION;
 
-public class EmojiReactionView extends ImageView {
+/**
+ * TODO : Add a brief description about the class
+ */
+
+public class EmojiReactionView extends AppCompatImageView {
+
+    /// General variables
+
+    // Click interface for emoji click
     private ClickInterface mClickInterface;
+    // Array of emoji bitmaps
     private Bitmap[] emojiBitmap;
+    // Index of the selected bitmap
     private int clickedEmojiNumber = -1;
+    // Total number of emoji bitmaps
     private int numberOfEmojis = 0;
+    // ArrayList containing all emoji ids to be displayed
     private ArrayList<Integer> emojiId = new ArrayList<>();
+    // Activity context
     private Context context;
-    private float densityFactor = getResources().getDisplayMetrics().density;
+    // Density factor
+    private final float densityFactor = getResources().getDisplayMetrics().density;
+    // Variables for available height and width
+    private int availableHeight = 0;
+    private int availableWidth = 0;
+    // Variable for getting the dimension height or width, whichever is smaller
     private int smallerDimension = 0;
 
-    //coverEmoji
+    /// Cover emoji variables
+
+    // Cover emoji rect variable
     private Rect coverRect = new Rect();
+    // Length of side of cover rect
     private int coverSide = (int) (50 * densityFactor);
+    // Cover emoji center
     private int[] coverCenter = new int[]{(int) (30 * densityFactor), 0};
+    // Cover emoji bitmap
     private Bitmap coverBitmap;
+    // Boolean to visible cover emoji
     private boolean coverEmojiVisible;
 
-    //circleAnim
+    /// Circular Animation Variables
+
+    // Circle center for creating circle
     private float[] circleCentre = new float[2];
+    // Circle radius variable
     private int circleRadius = -1;
-    private int emojiReactSide = (int) (50 * densityFactor);//TODO: can be improved in landscape mode!!
+    // Emoji icon side length
+    //TODO: can be improved in landscape mode!!
+    private int emojiReactSide = (int) (50 * densityFactor);
+    // Coordinates for emoji translation
     private int[][] emojiMovingPoint;
+    // Variable used to measure the length of a path, and/or to find the position and tangent along it
     private PathMeasure[] pms;
+    // Boolean checks whether animation is working or not
     private boolean circleAnimWorking;
+    // Matrix is used emojis that are present in circular reveal as there is a rotating animation for them
     private ArrayList<Matrix> emojiMatrix = new ArrayList<>();
 
-    //clicking/unclicking
+    /// Variables for clicking and un-clicking gesture detection
+
+    // Radius for defining clicked region radius
     private int clickedRadius;
+    // Paint object for creating a white background around the emoji when clicked
     private Paint clickedPaint = new Paint();
     int iCurStep = 20;// current step
     int iCurStepTaken = 0;// current step
+    // Boolean to check that click animation is working or not
     private boolean clickingAnimWorking;
 
     //risingEmoji

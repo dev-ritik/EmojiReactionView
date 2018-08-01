@@ -3,7 +3,7 @@ package com.ritik.emojireactionlibrary;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-public class RisingEmoji {
+class RisingEmoji {
     private Rect rect;
     private int speed;
     private Paint paint;
