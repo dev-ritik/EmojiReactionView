@@ -39,8 +39,6 @@ public class EmojiReactionView extends ImageView {
     private ArrayList<Integer> emojiId = new ArrayList<>();
     private Context context;
     private float densityFactor = getResources().getDisplayMetrics().density;
-    private int availableHeight = 0;
-    private int availableWidth = 0;
     private int smallerDimension = 0;
 
     //coverEmoji
@@ -104,66 +102,55 @@ public class EmojiReactionView extends ImageView {
 
             if (attr == R.styleable.EmojiReactionView_emojis) {
                 final TypedArray resourceArray = context.getResources().obtainTypedArray(arr.getResourceId(R.styleable.EmojiReactionView_emojis, 0));
-//                Log.i("point 106", "attrs");
+                Log.i("point 107", "attrs" + numberOfEmojis);
                 for (int j = 0; j < resourceArray.length(); j++) {
+                    Log.i("point 111", "attrs");
                     emojiId.add(resourceArray.getResourceId(j, 0));
                 }
+                numberOfEmojis = emojiId.size();
                 resourceArray.recycle();
-            } else if (attr == R.styleable.EmojiReactionView_center_X) {
-//                Log.i("point 104", "attrs");
+
+            } else if (attr == R.styleable.EmojiReactionView_circle_center_X) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
                     circleCentre[0] = arr.getDimensionPixelSize(attr, -1);
                 else {
                     circleCentre[0] = checkFraction(arr.getFraction(attr, 1, 1, -1));
                 }
-//                Log.i("point 107", "here" + circleCentre[0]);
-
-            } else if (attr == R.styleable.EmojiReactionView_center_Y) {
+            } else if (attr == R.styleable.EmojiReactionView_circle_center_Y) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
                     circleCentre[1] = arr.getDimensionPixelSize(attr, -1);
                 else
                     circleCentre[1] = checkFraction(arr.getFraction(attr, 1, 1, -1));
-//                Log.i("point 114", "here" + circleCentre[1]);
-            } else if (attr == R.styleable.EmojiReactionView_radius) {
-                if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    circleRadius = arr.getDimensionPixelSize(attr, -1);
-//                Log.i("point mi117", circleRadius + "");
+            } else if (attr == R.styleable.EmojiReactionView_circle_radius) {
+                circleRadius = arr.getDimensionPixelSize(attr, -1);
 
             } else if (attr == R.styleable.EmojiReactionView_cover_Center_X) {
-                if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    coverCenter[0] = arr.getDimensionPixelSize(attr, coverCenter[0]);
-//                Log.i("point mi117", circleRadius + "");
+                coverCenter[0] = arr.getDimensionPixelSize(attr, coverCenter[0]);
 
             } else if (attr == R.styleable.EmojiReactionView_cover_Center_Y) {
-                if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    coverCenter[1] = 0 - arr.getDimensionPixelSize(attr, 0);
-//                Log.i("point mi117", circleRadius + "");
+                coverCenter[1] = 0 - arr.getDimensionPixelSize(attr, 0);
 
             } else if (attr == R.styleable.EmojiReactionView_cover_side) {
-                if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    coverSide = arr.getDimensionPixelSize(attr, coverSide);
-//                Log.i("point mi117", circleRadius + "");
+                coverSide = arr.getDimensionPixelSize(attr, coverSide);
 
             } else if (attr == R.styleable.EmojiReactionView_emoji_react_side) {
-                if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    emojiReactSide = arr.getDimensionPixelSize(attr, emojiReactSide);
-//                Log.i("point mi117", circleRadius + "");
-
-            } else if (attr == R.styleable.EmojiReactionView_emojis_rising_speed) {
-                if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    emojisRisingSpeed = arr.getDimensionPixelSize(attr, -1);
+                emojiReactSide = arr.getDimensionPixelSize(attr, emojiReactSide);
 //                Log.i("point mi117", circleRadius + "");
 
             } else if (attr == R.styleable.EmojiReactionView_emojis_rising_height) {
-                if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    emojisRisingHeight = arr.getDimensionPixelSize(attr, -1);
-                else
-                    emojisRisingHeight = checkFraction(arr.getFraction(attr, 1, 1, -1));
+                emojisRisingHeight = checkFraction(arr.getFraction(attr, 1, 1, -1));
+            } else if (attr == R.styleable.EmojiReactionView_emojis_rising_speed) {
+                emojisRisingSpeed = arr.getDimensionPixelSize(attr, -1);
+
             } else if (attr == R.styleable.EmojiReactionView_emojis_rising_number) {
-                numberOfRisers = arr.getInt(attr, numberOfEmojis);
+                numberOfRisers = arr.getInt(attr, numberOfRisers);
             } else if (attr == R.styleable.EmojiReactionView_set_emoji) {
                 clickedEmojiNumber = arr.getInt(attr, clickedEmojiNumber);
             }
+        }
+        Log.i("point 159", numberOfEmojis + " " + clickedEmojiNumber);
+        if (clickedEmojiNumber >= numberOfEmojis || clickedEmojiNumber < -1) {
+            throw new IllegalArgumentException("set_emoji can't be more than number of emojis!");
         }
 
         arr.recycle();
@@ -271,7 +258,6 @@ public class EmojiReactionView extends ImageView {
 
     private void setup() {
         Log.i("point 158", "setup" + getWidth() + " " + densityFactor);
-
         if (emojiId == null) {
             return;
         }
@@ -286,7 +272,7 @@ public class EmojiReactionView extends ImageView {
         if (getWidth() == 0 && getHeight() == 0) {
             return;
         } else {
-            initDefaultDimensions();
+            smallerDimension = getHeight() > getWidth() ? getWidth() : getHeight();
         }
         Log.i("point mi273", "here" + getHeight() + " " + densityFactor);
 
@@ -299,12 +285,6 @@ public class EmojiReactionView extends ImageView {
         setPathCircle();
 
         coverEmojiVisible = true;
-    }
-
-    private void initDefaultDimensions() {
-        availableHeight = getHeight() - getPaddingTop() - getPaddingBottom();
-        availableWidth = getWidth() - getPaddingLeft() - getPaddingRight();
-        smallerDimension = getHeight() > getWidth() ? getWidth() : getHeight();
     }
 
     private void setCoverRect() {
@@ -350,24 +330,11 @@ public class EmojiReactionView extends ImageView {
 
     }
 
-//    Matrix m = new Matrix();
-
     @Override
     protected void onDraw(Canvas canvas) {
-//        Log.i("point mi113", "draw" + coverEmojiVisible + circleAnimWorking + clickingAnimWorking + emojiRising);
 //        Log.i("point 386", "here" + emojiBitmap.length + " " + emojiId.size());
         Log.i("point mi113", "draw");
         super.onDraw(canvas);
-
-//        circleAnimWorking = false;
-//        coverEmojiVisible = false;
-//        clickingAnimWorking = false;
-//        emojiRising = false;
-//        m.setScale(2,2);
-//        m.postTranslate(200 - 2*35, 200 - 2*35);
-//        m.postRotate(98, 200, 200);
-//        canvas.drawBitmap(coverBitmap, m, null);
-//        canvas.drawCircle(getPaddingLeft(), 300, 100, clickedPaint);
 
         if (coverEmojiVisible)
             if (clickedEmojiNumber == -1)
@@ -490,7 +457,6 @@ public class EmojiReactionView extends ImageView {
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 emojiMatrix.get(clickedIndex).setScale((float) valueAnimator.getAnimatedValue(), (float) valueAnimator.getAnimatedValue());
                 emojiMatrix.get(clickedIndex).postTranslate(emojiMovingPoint[clickedIndex][0] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2, emojiMovingPoint[clickedIndex][1] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2);
-                //                Log.i("Point 270", "va" + valueAnimator.getAnimatedValue());
                 clickedRadius = (int) (emojiReactSide * (float) valueAnimator.getAnimatedValue() * 0.7);
                 invalidate();
             }
@@ -511,6 +477,11 @@ public class EmojiReactionView extends ImageView {
     }
 
     private void emojiRisinginit() {
+        if (numberOfRisers <= 0) {
+            coverEmojiVisible = true;
+            invalidate();
+            return;
+        }
         emojiRising = true;
         for (int i = 0; i < numberOfRisers; i++) {
             Rect risingRect = calculateNewRect(new Rect(), new Random().nextInt(getWidth() + 1), getHeight() + new Random().nextInt(2 * getHeight() / 5), new Random().nextInt(emojiReactSide / 4) + emojiReactSide / 3);
@@ -579,7 +550,7 @@ public class EmojiReactionView extends ImageView {
     public boolean onTouchEvent(MotionEvent event) {
 //        Log.i("point 600", "onTouchEvent" + event.getX() + " y " + event.getY());
 
-        for (int i = 0; i < numberOfEmojis; i++) {
+        for (int i = numberOfEmojis - 1; i >= 0; i--) {
             if (circleAnimWorking && clickedOnEmojiReact(i, event.getX(), event.getY())) {
 
                 if (clickedEmojiNumber == i) {
@@ -625,11 +596,6 @@ public class EmojiReactionView extends ImageView {
     }
 
     @Override
-    public boolean performClick() {
-        return super.performClick();
-    }
-
-    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         setup();
@@ -649,6 +615,9 @@ public class EmojiReactionView extends ImageView {
 
     private Bitmap getBitmapFromId(int id, int side) {
 //        Log.i("point 696", "getBitmapFromId" + side);
+        if (side <= 0)
+            throw new IllegalArgumentException("Emoji can't have 0 or negative side");
+
         Drawable drawable = getResources().getDrawable(id);
         if (drawable == null) {
             return null;
