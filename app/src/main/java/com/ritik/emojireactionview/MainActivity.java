@@ -12,25 +12,33 @@ import com.ritik.emojireactionlibrary.EmojiReactionView;
 public class MainActivity extends AppCompatActivity {
 
     EmojiReactionView myImage;
+    int clickedEmoji = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+//      TODO screen rotation doesn't retains state
+        Log.i("point 22", clickedEmoji + "");
         myImage = findViewById(R.id.image);
+        if (savedInstanceState != null) {
+            clickedEmoji = savedInstanceState.getInt("emojiNumber");
+            myImage.setClickedEmojiNumber(clickedEmoji);
+            Log.i("point 27", "here");
+        }
 
-        myImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "clicked!!", Toast.LENGTH_SHORT).show();
+//        myImage.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(MainActivity.this, "clicked!!", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
-            }
-        });
         myImage.setOnEmojiClickListener(new ClickInterface() {
             @Override
             public void onEmojiClicked(int emojiIndex, int x, int y) {
                 Toast.makeText(MainActivity.this, "em" + (emojiIndex + 1) + "!", Toast.LENGTH_SHORT).show();
+                clickedEmoji = emojiIndex;
             }
 
             @Override
@@ -52,4 +60,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void test1(View view) { }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("emojiNumber", clickedEmoji);
+        super.onSaveInstanceState(outState);
+    }
 }
