@@ -32,29 +32,18 @@
                 android:onClick="test1"
                 android:text="test1" />
 
-            <Button
-                android:id="@+id/test2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="test2"
-                android:text="test2" />
-
-            <Button
-                android:id="@+id/test3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="test3"
-                android:text="test3" />
         </LinearLayout>
 
         <com.ritik.emojireactionlibrary.EmojiReactionView
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/colorPrimaryDark"
+            android:padding="50dp"
             android:scaleType="fitXY"
             android:src="@drawable/android1_min"
             app:emojis="@array/emoji"
-            app:emojis_rising_speed="20dp" />
+             />
 
         <!--<ImageView-->
         <!--android:id="@+id/image1"-->
