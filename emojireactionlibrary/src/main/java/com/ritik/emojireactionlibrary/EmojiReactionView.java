@@ -63,6 +63,7 @@ public class EmojiReactionView extends AppCompatImageView {
 
     // Cover emoji rect variable
     private Rect coverRect = new Rect();
+    // Length of side of cover rect
     private int coverSide = (int) (50 * densityFactor);
     // Cover emoji center
     private int[] coverCenter = new int[]{(int) (30 * densityFactor), 0};
@@ -71,20 +72,33 @@ public class EmojiReactionView extends AppCompatImageView {
     // Boolean to visible cover emoji
     private boolean coverEmojiVisible;
 
-    //circleAnim
+    /// Circular Animation Variables
+
+    // Circle center for creating circle
     private float[] circleCentre = new float[2];
+    // Circle radius variable
     private int circleRadius = -1;
-    private int emojiReactSide = (int) (50 * densityFactor);//TODO: can be improved in landscape mode!!
+    // Emoji icon side length
+    //TODO: can be improved in landscape mode!!
+    private int emojiReactSide = (int) (50 * densityFactor);
+    // Coordinates for emoji translation
     private int[][] emojiMovingPoint;
+    // Variable used to measure the length of a path, and/or to find the position and tangent along it
     private PathMeasure[] pms;
+    // Boolean checks whether animation is working or not
     private boolean circleAnimWorking;
+    // Matrix is used emojis that are present in circular reveal as there is a rotating animation for them
     private ArrayList<Matrix> emojiMatrix = new ArrayList<>();
 
-    //clicking/unclicking
+    /// Variables for clicking and un-clicking gesture detection
+
+    // Radius for defining clicked region radius
     private int clickedRadius;
+    // Paint object for creating a white background around the emoji when clicked
     private Paint clickedPaint = new Paint();
     int iCurStep = 20;// current step
     int iCurStepTaken = 0;// current step
+    // Boolean to check that click animation is working or not
     private boolean clickingAnimWorking;
 
     //risingEmoji
