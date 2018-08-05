@@ -62,7 +62,7 @@ _With this all done and working, you have made to the default design!_
 # Further customization
 The library provides these attributes to modify default design to a custom one:
 
-    |Attribute            |Description                                               | Type(Range)                                      |Default Value                        |
+|Attribute            |Description                                               | Type(Range)                                      |Default Value                        |
 |---------------------|--------------------------------------------------------------|--------------------------------------------------|-------------------------------------|
 |emojis               | Set the Emojis to be displayed in the semi-circular animation| reference                                        |                                     |
 |set_emoji            | Set the current selected emoji                               | integer(>-1)(< noe*) (0 based)                    | -1                                  |
