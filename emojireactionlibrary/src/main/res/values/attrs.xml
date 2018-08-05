@@ -2,18 +2,30 @@
 <resources>
 
     <declare-styleable name="EmojiReactionView">
+
+        /// General Attributes
+
         <attr name="emojis" format="reference" />
-        <attr name="circle_center_X" format="dimension|fraction" />
-        <attr name="circle_center_Y" format="dimension|fraction" />
-        <attr name="circle_radius" format="dimension" />
+        <attr name="set_emoji" format="integer" />
+
+        /// Cover emoji Attributes
+
         <attr name="cover_Center_X" format="dimension" />
         <attr name="cover_Center_Y" format="dimension" />
         <attr name="cover_side" format="dimension" />
+
+        /// Circular Animation Attributes
+
+        <attr name="circle_center_X" format="dimension|fraction" />
+        <attr name="circle_center_Y" format="dimension|fraction" />
+        <attr name="circle_radius" format="dimension" />
         <attr name="emoji_react_side" format="dimension" />
+
+        /// Rising Emojis Attributes
+
         <attr name="emojis_rising_height" format="fraction" />
         <attr name="emojis_rising_speed" format="dimension" />
         <attr name="emojis_rising_number" format="integer" />
-        <attr name="set_emoji" format="integer" />
     </declare-styleable>
 
 </resources>

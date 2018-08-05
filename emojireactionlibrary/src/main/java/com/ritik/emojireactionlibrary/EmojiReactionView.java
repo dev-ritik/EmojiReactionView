@@ -149,6 +149,17 @@ public class EmojiReactionView extends AppCompatImageView {
                 numberOfEmojis = emojiId.size();
                 resourceArray.recycle();
 
+            } else if (attr == R.styleable.EmojiReactionView_set_emoji) {
+                clickedEmojiNumber = arr.getInt(attr, clickedEmojiNumber);
+            } else if (attr == R.styleable.EmojiReactionView_cover_Center_X) {
+                coverCenter[0] = arr.getDimensionPixelSize(attr, coverCenter[0]);
+
+            } else if (attr == R.styleable.EmojiReactionView_cover_Center_Y) {
+                coverCenterYGiven = arr.getDimensionPixelSize(attr, 0);
+
+            } else if (attr == R.styleable.EmojiReactionView_cover_side) {
+                coverSide = arr.getDimensionPixelSize(attr, coverSide);
+
             } else if (attr == R.styleable.EmojiReactionView_circle_center_X) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
                     circleCentreGiven[0] = arr.getDimensionPixelSize(attr, -1);
@@ -163,15 +174,6 @@ public class EmojiReactionView extends AppCompatImageView {
             } else if (attr == R.styleable.EmojiReactionView_circle_radius) {
                 circleRadiusGiven = arr.getDimensionPixelSize(attr, -1);
 
-            } else if (attr == R.styleable.EmojiReactionView_cover_Center_X) {
-                coverCenter[0] = arr.getDimensionPixelSize(attr, coverCenter[0]);
-
-            } else if (attr == R.styleable.EmojiReactionView_cover_Center_Y) {
-                coverCenterYGiven = arr.getDimensionPixelSize(attr, 0);
-
-            } else if (attr == R.styleable.EmojiReactionView_cover_side) {
-                coverSide = arr.getDimensionPixelSize(attr, coverSide);
-
             } else if (attr == R.styleable.EmojiReactionView_emoji_react_side) {
                 emojiReactSide = arr.getDimensionPixelSize(attr, emojiReactSide);
 
@@ -182,8 +184,6 @@ public class EmojiReactionView extends AppCompatImageView {
 
             } else if (attr == R.styleable.EmojiReactionView_emojis_rising_number) {
                 numberOfRisers = arr.getInt(attr, numberOfRisers);
-            } else if (attr == R.styleable.EmojiReactionView_set_emoji) {
-                clickedEmojiNumber = arr.getInt(attr, clickedEmojiNumber);
             }
         }
 //        Log.i("point 159", numberOfEmojis + " " + clickedEmojiNumber + " " + coverCenter[1]);
@@ -239,36 +239,12 @@ public class EmojiReactionView extends AppCompatImageView {
         return numberOfEmojis;
     }
 
-    public boolean isClickingAnimWorking() {
-        return clickingAnimWorking;
-    }
-
-    public boolean isCircleAnimWorking() {
-        return circleAnimWorking;
-    }
-
-    public boolean isEmojiRising() {
-        return emojiRising;
-    }
-
     public int getEmojisRisingSpeed() {
         return emojisRisingSpeed;
     }
 
     public Rect getCoverRect() {
         return coverRect;
-    }
-
-    public int getCoverSide() {
-        return coverSide;
-    }
-
-    public float getCoverCenterX() {
-        return coverCenter[0];
-    }
-
-    public float getCoverCenterY() {
-        return coverCenter[1];
     }
 
     public int getEmojiReactSide() {
@@ -285,6 +261,18 @@ public class EmojiReactionView extends AppCompatImageView {
 
     public boolean isCoverEmojiVisible() {
         return coverEmojiVisible;
+    }
+
+    public boolean isCircleAnimWorking() {
+        return circleAnimWorking;
+    }
+
+    public boolean isClickingAnimWorking() {
+        return clickingAnimWorking;
+    }
+
+    public boolean isEmojiRising() {
+        return emojiRising;
     }
 
     public void setOnEmojiClickListener(@Nullable ClickInterface l) {
@@ -339,7 +327,7 @@ public class EmojiReactionView extends AppCompatImageView {
             coverCenter[1] = (int) (getHeight() - coverCenterYGiven);
         }
 
-        coverBitmap = getBitmapFromId(R.drawable.cover_min, coverSide);
+        coverBitmap = getBitmapFromId(R.drawable.cover, coverSide);
         coverRect = new Rect((coverCenter[0] - coverSide / 2), (coverCenter[1] - coverSide / 2), (coverCenter[0] + coverSide / 2), (coverCenter[1] + coverSide / 2));
     }
 
