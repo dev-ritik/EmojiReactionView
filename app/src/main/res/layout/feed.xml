@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/messageLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+
+    <com.ritik.emojireactionlibrary.EmojiReactionView
+        android:id="@+id/photoImageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        app:emojis="@array/emoji" />
+
+
+    <TextView
+        android:id="@+id/messageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="10dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="25sp"
+        tools:text="Message" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:paddingBottom="3dp">
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="35sp"
+            android:layout_alignParentEnd="true"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/background_others"
+            android:textSize="13sp"
+            tools:text="Nov 6, 11:28 PM" />
+
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:text="88" />
+
+    </RelativeLayout>
+</LinearLayout>
