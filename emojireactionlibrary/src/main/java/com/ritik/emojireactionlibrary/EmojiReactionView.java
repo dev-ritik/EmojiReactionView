@@ -56,6 +56,8 @@ public class EmojiReactionView extends AppCompatImageView {
     // Variables for available height and width
     // Variable for getting the dimension height or width, whichever is smaller
     private int smallerDimension = 0;
+    private boolean wasSwiping = false;
+    private boolean emojiClicked = false;
 
     /// Cover emoji variables
 
@@ -89,7 +91,7 @@ public class EmojiReactionView extends AppCompatImageView {
     // Boolean checks whether animation is working or not
     private boolean circleAnimWorking;
     // Matrix is used emojis that are present in circular reveal as there is a rotating animation for them
-    private ArrayList<Matrix> emojiMatrix = new ArrayList<>();
+    private Matrix[] emojiMatrix;
 
     /// Variables for clicking and un-clicking gesture detection
 
@@ -103,7 +105,7 @@ public class EmojiReactionView extends AppCompatImageView {
     private boolean clickingAnimWorking;
 
     //risingEmoji
-    private int emojisRisingSpeed = (int) (15 * densityFactor);
+    private int emojisRisingSpeed = (int) (10 * densityFactor);
     private int emojisRisingHeight = -1;
     private float emojisRisingHeightGiven = -1;
     private ArrayList<RisingEmoji> risingEmojis = new ArrayList<>();
@@ -353,7 +355,7 @@ public class EmojiReactionView extends AppCompatImageView {
         else if (circleCentreGiven[1] <= 1 && circleCentreGiven[1] > 0) {
             circleCentre[1] = (int) (circleCentreGiven[1] * getHeight());
         }
-//      TODO: need to look somewhat flatter
+//TODO: need to look somewhat flatter
         if (circleRadiusGiven == -1) {
             circleRadius = (int) (smallerDimension / 2 - 20 * densityFactor);
         } else {
@@ -390,7 +392,7 @@ public class EmojiReactionView extends AppCompatImageView {
                 canvas.drawCircle(emojiMovingPoint[clickedEmojiNumber][0], emojiMovingPoint[clickedEmojiNumber][1], clickedRadius, clickedPaint);
             }
             for (int i = 0; i < numberOfEmojis; i++) {
-                canvas.drawBitmap(emojiBitmap[i], emojiMatrix.get(i), null);
+                canvas.drawBitmap(emojiBitmap[i], emojiMatrix[i], null);
             }
             startCircleAnim();
         }
@@ -399,7 +401,7 @@ public class EmojiReactionView extends AppCompatImageView {
                 canvas.drawCircle(emojiMovingPoint[clickedEmojiNumber][0], emojiMovingPoint[clickedEmojiNumber][1], clickedRadius, clickedPaint);
             }
             for (int i = 0; i < numberOfEmojis; i++) {
-                canvas.drawBitmap(emojiBitmap[i], emojiMatrix.get(i), null);
+                canvas.drawBitmap(emojiBitmap[i], emojiMatrix[i], null);
             }
         }
 
@@ -421,13 +423,13 @@ public class EmojiReactionView extends AppCompatImageView {
     private void startCircleAnim() {
         float[] emojiMovingPointFloat = new float[2];
         int[] emojiMovingPointInt;
-        Matrix matrix;
+        if (emojiMatrix == null) {
+            emojiMatrix = new Matrix[numberOfEmojis];
+        }
         for (int i = 0; i < numberOfEmojis; i++) {
             if (emojiBitmap[i] == null) {
                 emojiBitmap[i] = getBitmapFromId(emojiId.get(i), emojiReactSide);
             }
-            matrix = new Matrix();
-            emojiMatrix.add(matrix);
         }
 
         if (emojiMovingPoint == null) {
@@ -444,11 +446,11 @@ public class EmojiReactionView extends AppCompatImageView {
             for (int i = 0; i < numberOfEmojis; i++) {
                 pms[i].getPosTan(fSegmentLen * iCurStepTaken, emojiMovingPointFloat, null);
                 emojiMovingPoint[i] = convertFloatArrayToIntArray(emojiMovingPointFloat, emojiMovingPoint[i]);
-                emojiMatrix.set(i, new Matrix());
+                emojiMatrix[i] = new Matrix();
 //                int scale = emojiReactSide / emojiBitmap[0].getHeight();
 //                emojiMatrix.get(i).setScale(scale, scale);
-                emojiMatrix.get(i).postTranslate(emojiMovingPoint[i][0] - emojiReactSide / 2, emojiMovingPoint[i][1] - emojiReactSide / 2);
-                emojiMatrix.get(i).postRotate((iCurStep) * (75 - 150 * (i + 1) / (numberOfEmojis + 1)) / 20, emojiMovingPoint[i][0], emojiMovingPoint[i][1]);
+                emojiMatrix[i].postTranslate(emojiMovingPoint[i][0] - emojiReactSide / 2, emojiMovingPoint[i][1] - emojiReactSide / 2);
+                emojiMatrix[i].postRotate((iCurStep) * (75 - 150 * (i + 1) / (numberOfEmojis + 1)) / 20, emojiMovingPoint[i][0], emojiMovingPoint[i][1]);
             }
             iCurStepTaken += iCurStep;
             iCurStep--;
@@ -473,8 +475,8 @@ public class EmojiReactionView extends AppCompatImageView {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
 //                Log.i("Point 240", "va" + valueAnimator.getAnimatedValue());
-                emojiMatrix.get(clickedIndex).setScale((float) valueAnimator.getAnimatedValue(), (float) valueAnimator.getAnimatedValue());
-                emojiMatrix.get(clickedIndex).postTranslate(emojiMovingPoint[clickedIndex][0] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2, emojiMovingPoint[clickedIndex][1] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2);
+                emojiMatrix[clickedIndex].setScale((float) valueAnimator.getAnimatedValue(), (float) valueAnimator.getAnimatedValue());
+                emojiMatrix[clickedIndex].postTranslate(emojiMovingPoint[clickedIndex][0] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2, emojiMovingPoint[clickedIndex][1] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2);
                 invalidate();
             }
         });
@@ -499,8 +501,8 @@ public class EmojiReactionView extends AppCompatImageView {
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                emojiMatrix.get(clickedIndex).setScale((float) valueAnimator.getAnimatedValue(), (float) valueAnimator.getAnimatedValue());
-                emojiMatrix.get(clickedIndex).postTranslate(emojiMovingPoint[clickedIndex][0] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2, emojiMovingPoint[clickedIndex][1] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2);
+                emojiMatrix[clickedIndex].setScale((float) valueAnimator.getAnimatedValue(), (float) valueAnimator.getAnimatedValue());
+                emojiMatrix[clickedIndex].postTranslate(emojiMovingPoint[clickedIndex][0] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2, emojiMovingPoint[clickedIndex][1] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2);
                 clickedRadius = (int) (emojiReactSide * (float) valueAnimator.getAnimatedValue() * 0.7);
                 invalidate();
             }
@@ -549,7 +551,7 @@ public class EmojiReactionView extends AppCompatImageView {
                         }
                     });
                 }
-            }, 5, 60);
+            }, 5, 40);
         }
 
     }
@@ -588,50 +590,75 @@ public class EmojiReactionView extends AppCompatImageView {
             }
         }
     }
+    //TODO set emoji before anim starts
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 //        Log.i("point 600", "onTouchEvent" + event.getX() + " y " + event.getY());
-//TODO touch event swipe
-        for (int i = numberOfEmojis - 1; i >= 0; i--) {
-            if (circleAnimWorking && clickedOnEmojiReact(i, event.getX(), event.getY())) {
-
-                if (clickedEmojiNumber == i) {
-                    if (mClickInterface != null)
-                        mClickInterface.onEmojiUnclicked(i, (int) event.getX(), (int) event.getY());
-                    startUnclickingAnim(clickedEmojiNumber);
-                    //TODO set emoji before aim starts
-                    return false;
-                } else if (clickedEmojiNumber != -1) {
-                    if (mClickInterface != null)
-                        mClickInterface.onEmojiUnclicked(clickedEmojiNumber, (int) event.getX(), (int) event.getY());
+        Log.i("point 596", "onTouchEvent " + event.getAction());
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            wasSwiping = false;
+            if (circleAnimWorking) {
+                for (int i = numberOfEmojis - 1; i >= 0; i--) {
+                    if (clickedOnEmojiReact(i, event.getX(), event.getY())) {
+                        emojiClicked = true;
+                        break;
+                    }
                 }
-
-                if (mClickInterface != null)
-                    mClickInterface.onEmojiClicked(i, (int) event.getX(), (int) event.getY());
-                startClickingAnim(i);
-                return false;
+                if (clickedEmojiNumber != -1 && clickedOnRing(event.getX(), event.getY(), clickedEmojiNumber)) {
+                    emojiClicked = true;
+                }
             }
-        }
-        if (circleAnimWorking && clickedEmojiNumber != -1 && clickedOnRing(event.getX(), event.getY(), clickedEmojiNumber)) {
-            if (mClickInterface != null)
-                mClickInterface.onEmojiUnclicked(clickedEmojiNumber, (int) event.getX(), (int) event.getY());
-            startUnclickingAnim(clickedEmojiNumber);
-            return false;
-        }
-
-        if (coverEmojiVisible && coverRect.contains((int) event.getX(), (int) event.getY())) {
-            coverEmojiVisible = false;
-            circleAnimWorking = true;
-            startCircleAnim();
-            return false;
-        }
-
-        if (circleAnimWorking) {
+        } else if (!wasSwiping && event.getAction() == MotionEvent.ACTION_MOVE) {
+            wasSwiping = true;
+        } else if (wasSwiping && emojiClicked && event.getAction() == MotionEvent.ACTION_UP) {
+            wasSwiping = false;
+            emojiClicked = false;
+        } else if (wasSwiping && !emojiClicked && event.getAction() == MotionEvent.ACTION_UP) {
             circleAnimWorking = false;
             coverEmojiVisible = true;
             setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
+
+        } else if (!wasSwiping && event.getAction() == MotionEvent.ACTION_UP) {
+            if (circleAnimWorking) {
+                for (int i = numberOfEmojis - 1; i >= 0; i--) {
+                    if (clickedOnEmojiReact(i, event.getX(), event.getY())) {
+
+                        if (clickedEmojiNumber == i) {
+                            if (mClickInterface != null)
+                                mClickInterface.onEmojiUnclicked(i, (int) event.getX(), (int) event.getY());
+                            startUnclickingAnim(clickedEmojiNumber);
+                            return false;
+                        } else if (clickedEmojiNumber != -1) {
+                            if (mClickInterface != null)
+                                mClickInterface.onEmojiUnclicked(clickedEmojiNumber, (int) event.getX(), (int) event.getY());
+                        }
+
+                        if (mClickInterface != null)
+                            mClickInterface.onEmojiClicked(i, (int) event.getX(), (int) event.getY());
+                        startClickingAnim(i);
+                        return false;
+                    }
+                }
+                if (clickedEmojiNumber != -1 && clickedOnRing(event.getX(), event.getY(), clickedEmojiNumber)) {
+                    if (mClickInterface != null)
+                        mClickInterface.onEmojiUnclicked(clickedEmojiNumber, (int) event.getX(), (int) event.getY());
+                    startUnclickingAnim(clickedEmojiNumber);
+                    return false;
+                }
+                circleAnimWorking = false;
+                coverEmojiVisible = true;
+                setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
+
+            } else if (coverEmojiVisible && coverRect.contains((int) event.getX(), (int) event.getY())) {
+                coverEmojiVisible = false;
+                circleAnimWorking = true;
+                startCircleAnim();
+                return false;
+            }
+
+
         }
         return super.onTouchEvent(event);
     }
