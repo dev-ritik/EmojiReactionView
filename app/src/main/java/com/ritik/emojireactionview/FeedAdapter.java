@@ -1,5 +1,6 @@
 package com.ritik.emojireactionview;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ritik.emojireactionlibrary.ClickInterface;
 import com.ritik.emojireactionlibrary.EmojiReactionView;
@@ -15,7 +17,8 @@ import com.ritik.emojireactionlibrary.EmojiReactionView;
 import java.util.ArrayList;
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
-    private ArrayList<Feed> mDataset;
+    private ArrayList<Feed> mDataSet;
+    private Context context;
 
     // Provide a reference to the views for each data item
     // you provide access to all the views for a data item in a view holder
@@ -36,8 +39,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    FeedAdapter(ArrayList<Feed> myDataset) {
-        mDataset = myDataset;
+    FeedAdapter(ArrayList<Feed> myDataSet) {
+        mDataSet = myDataSet;
     }
 
     // Create new views (invoked by the layout manager)
@@ -48,15 +51,16 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.feed, parent, false);
-
+        this.context = parent.getContext();
         return new ViewHolder(v);
     }
+    //TODO open and close circle anim on view creation
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        final Feed feed = mDataset.get(position);
+        final Feed feed = mDataSet.get(position);
 //        Log.i(post.getText(), "standpoint po99");
 
         holder.messageTextView.setText(feed.getMessage());
@@ -64,13 +68,20 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         holder.photo.setOnEmojiClickListener(new ClickInterface() {
             @Override
             public void onEmojiClicked(int emojiIndex, int x, int y) {
-                Log.i("point 65", emojiIndex + " pos " + position);
+                Toast.makeText(context, "em "+emojiIndex, Toast.LENGTH_SHORT).show();
                 feed.setClickedEmoji(emojiIndex);
             }
 
             @Override
             public void onEmojiUnclicked(int emojiIndex, int x, int y) {
-                Log.i("point 72", emojiIndex + " pos " + position);
+                Toast.makeText(context, "unem "+emojiIndex, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        holder.photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -80,10 +91,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+    // Return the size of your dataSet (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.size();
+        return mDataSet.size();
     }
 
 }

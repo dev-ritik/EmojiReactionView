@@ -19,33 +19,26 @@
             android:onClick="test"
             android:text="test" />
 
-        <Button
-            android:id="@+id/test1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="test1"
-            android:text="test1" />
-
     </LinearLayout>
 
-    <com.ritik.emojireactionlibrary.EmojiReactionView
-        android:id="@+id/image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimaryDark"
-        android:scaleType="centerCrop"
-        android:src="@drawable/android1_min"
-        app:emojis="@array/emoji" />
-
-    <!--<android.support.v7.widget.RecyclerView-->
-    <!--android:id="@+id/my_recycler_view"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:divider="@android:color/transparent"-->
-    <!--android:scrollbars="vertical"-->
-    <!--android:stackFromBottom="true"-->
-    <!--android:transcriptMode="alwaysScroll"-->
-    <!--tools:listitem="@layout/feed" />-->
+    <!--<com.ritik.emojireactionlibrary.EmojiReactionView-->
+        <!--android:id="@+id/image"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="@color/colorPrimaryDark"-->
+        <!--android:scaleType="centerCrop"-->
+        <!--android:src="@drawable/android1_min"-->
+        <!--app:emojis="@array/emoji" />-->
+<!---->
+    <android.support.v7.widget.RecyclerView
+    android:id="@+id/my_recycler_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:divider="@android:color/transparent"
+    android:scrollbars="vertical"
+    android:stackFromBottom="true"
+    android:transcriptMode="alwaysScroll"
+    tools:listitem="@layout/feed" />
 
     <!--<ImageView-->
     <!--android:id="@+id/image1"-->

@@ -7,13 +7,6 @@ class Feed {
     private String message;
     private int clickedEmoji;
 
-    Feed(String name, String time, String message) {
-        this.name = name;
-        this.time = time;
-        this.message = message;
-    }
-
-
     Feed(String name, String time, String message, int clickedEmoji) {
         this.name = name;
         this.time = time;
