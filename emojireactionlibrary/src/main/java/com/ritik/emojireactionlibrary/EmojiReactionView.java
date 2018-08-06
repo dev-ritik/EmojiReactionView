@@ -275,6 +275,22 @@ public class EmojiReactionView extends AppCompatImageView {
         return emojiRising;
     }
 
+    public void setCoverEmojiVisible() {
+        coverEmojiVisible = true;
+        circleAnimWorking=false;
+        clickingAnimWorking=false;
+        emojiRising=false;
+        setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
+    }
+
+    public void setCircleAnimWorking() {
+        circleAnimWorking = true;
+        coverEmojiVisible = false;
+        clickingAnimWorking=false;
+        emojiRising=false;
+        invalidate();
+    }
+
     public void setOnEmojiClickListener(@Nullable ClickInterface l) {
         this.mClickInterface = l;
     }
