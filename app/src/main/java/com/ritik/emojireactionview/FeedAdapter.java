@@ -3,11 +3,9 @@ package com.ritik.emojireactionview;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,8 +18,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     private ArrayList<Feed> mDataSet;
     private Context context;
 
-    // Provide a reference to the views for each data item
-    // you provide access to all the views for a data item in a view holder
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView messageTextView, timeTextView, name;
         //        ImageView photo;
@@ -31,10 +27,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             super(view);
 //            photo = view.findViewById(R.id.photoImageView);
             photo = view.findViewById(R.id.photoImageView);
-            messageTextView = (TextView) view.findViewById(R.id.messageTextView);
+            messageTextView =  view.findViewById(R.id.messageTextView);
 
-            timeTextView = (TextView) view.findViewById(R.id.time);
-            name = (TextView) view.findViewById(R.id.name);
+            timeTextView =  view.findViewById(R.id.time);
+            name =  view.findViewById(R.id.name);
         }
     }
 
@@ -58,10 +54,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-        // - get element from your dataset at this position
+        // - get element from your dataSet at this position
         // - replace the contents of the view with that element
         final Feed feed = mDataSet.get(position);
-//        Log.i(post.getText(), "standpoint po99");
 
         holder.messageTextView.setText(feed.getMessage());
         holder.photo.setImageResource(feed.getPicAddress());

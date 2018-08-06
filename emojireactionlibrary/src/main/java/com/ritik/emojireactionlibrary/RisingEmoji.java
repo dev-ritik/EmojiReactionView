@@ -3,6 +3,10 @@ package com.ritik.emojireactionlibrary;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+/**
+ * This class deals with properties of risingEmoji Rect
+ */
+
 class RisingEmoji {
     private Rect rect;
     private int speed;

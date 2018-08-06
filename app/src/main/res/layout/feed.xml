@@ -9,14 +9,12 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-
     <com.ritik.emojireactionlibrary.EmojiReactionView
         android:id="@+id/photoImageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         app:emojis="@array/emoji" />
-
 
     <TextView
         android:id="@+id/messageTextView"
@@ -29,7 +27,6 @@
         android:textColor="@color/colorPrimaryDark"
         android:textSize="25sp"
         tools:text="Message" />
-
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -46,7 +43,6 @@
             android:textColor="@color/background_others"
             android:textSize="13sp"
             tools:text="Nov 6, 11:28 PM" />
-
 
         <TextView
             android:id="@+id/name"
