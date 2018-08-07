@@ -383,7 +383,7 @@ public class EmojiReactionView extends AppCompatImageView {
         else if (circleCentreGiven[0] <= 1 && circleCentreGiven[0] >= 0) {
             circleCentre[0] = (int) (circleCentreGiven[0] * getWidth());
         }
-        if (circleCentreGiven[1] == -1 )
+        if (circleCentreGiven[1] == -1)
             circleCentre[1] = getHeight() - emojiReactSide / 2;
         else if (circleCentreGiven[1] <= 1 && circleCentreGiven[1] >= 0) {
             circleCentre[1] = (int) (circleCentreGiven[1] * getHeight());
@@ -628,20 +628,20 @@ public class EmojiReactionView extends AppCompatImageView {
     private void riseEmoji() {
         // calculate new coordinates
 
-        fading += new Random().nextInt(2);
+        if (startFading)
+            fading += new Random().nextInt(numberOfRisers / 5);
         // currently index to which emojis will be faded
-// TODO change above position
         for (int i = 0; i < risingEmojis.size(); i++) {
             RisingEmoji re = risingEmojis.get(i);
             // update rects to their new positions
             re.setRect(calculateNewRect(re.getRect(), re.getRect().centerX(), re.getRect().centerY() - re.getSpeed(), re.getRect().width() / 2));
-            
+
             //if any of the emoji crossed the threshold height, start fading emojis
             if (startFading || re.getRect().top <= emojisRisingHeight) {
                 startFading = true;
                 if (fading > risingEmojis.size()) fading = risingEmojis.size();
                 if (re.getPaint() == null) re.setPaint(new Paint());
-                
+
                 // if emojis index is smaller than currently fading index
                 if (i <= fading) {
                     // fade
@@ -702,59 +702,61 @@ public class EmojiReactionView extends AppCompatImageView {
             // swiping gesture detected
             wasSwiping = true;
 
-        } else if (wasSwiping && !emojiClicked && (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL)) {
-            // gesture ends with coverEmoji visible
-            circleAnimWorking = false;
-            coverEmojiVisible = true;
-            setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
-
-        } else if ((!wasSwiping || emojiClicked) && (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL)) {
-            // time to respond to clicks on emojiRect
-            if (circleAnimWorking) {
-                // detect if clicked on EmojiReact
-                for (int i = numberOfEmojis - 1; i >= 0; i--) {
-                    if (clickedOnEmojiReact(i, event.getX(), event.getY())) {
-
-                        if (clickedEmojiNumber == i) {
-                            if (mClickInterface != null)
-                                mClickInterface.onEmojiUnclicked(i, (int) event.getX(), (int) event.getY());
-                            startUnclickingAnim(clickedEmojiNumber);
-                            return false;
-                        } else if (clickedEmojiNumber != -1) {
-                            if (mClickInterface != null)
-                                mClickInterface.onEmojiUnclicked(clickedEmojiNumber, (int) event.getX(), (int) event.getY());
-                        }
-
-                        if (mClickInterface != null)
-                            mClickInterface.onEmojiClicked(i, (int) event.getX(), (int) event.getY());
-                        startClickingAnim(i);
-                        return false;
-                    }
-                }
-                // detect if clicked on circle surrounding clicked Emoji
-                if (clickedEmojiNumber != -1 && clickedOnRing(event.getX(), event.getY(), clickedEmojiNumber)) {
-                    if (mClickInterface != null)
-                        mClickInterface.onEmojiUnclicked(clickedEmojiNumber, (int) event.getX(), (int) event.getY());
-                    startUnclickingAnim(clickedEmojiNumber);
-                    return false;
-                }
-
-                // restore background dimness
+        } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
+            if (wasSwiping && !emojiClicked) {
+                // gesture ends with coverEmoji visible
                 circleAnimWorking = false;
                 coverEmojiVisible = true;
                 setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
+            } else {
+                // time to respond to clicks on emojiRect
+                if (circleAnimWorking) {
+                    // detect if clicked on EmojiReact
+                    for (int i = numberOfEmojis - 1; i >= 0; i--) {
+                        if (clickedOnEmojiReact(i, event.getX(), event.getY())) {
 
-            } else if (coverEmojiVisible && coverRect.contains((int) event.getX(), (int) event.getY())) {
-                // detect if clicked on coverEmoji
-                coverEmojiVisible = false;
-                circleAnimWorking = true;
-                startCircleAnim();
-                return false;
+                            if (clickedEmojiNumber == i) {
+                                if (mClickInterface != null)
+                                    mClickInterface.onEmojiUnclicked(i, (int) event.getX(), (int) event.getY());
+                                startUnclickingAnim(clickedEmojiNumber);
+                                return false;
+                            } else if (clickedEmojiNumber != -1) {
+                                if (mClickInterface != null)
+                                    mClickInterface.onEmojiUnclicked(clickedEmojiNumber, (int) event.getX(), (int) event.getY());
+                            }
+
+                            if (mClickInterface != null)
+                                mClickInterface.onEmojiClicked(i, (int) event.getX(), (int) event.getY());
+                            startClickingAnim(i);
+                            return false;
+                        }
+                    }
+                    // detect if clicked on circle surrounding clicked Emoji
+                    if (clickedEmojiNumber != -1 && clickedOnRing(event.getX(), event.getY(), clickedEmojiNumber)) {
+                        if (mClickInterface != null)
+                            mClickInterface.onEmojiUnclicked(clickedEmojiNumber, (int) event.getX(), (int) event.getY());
+                        startUnclickingAnim(clickedEmojiNumber);
+                        return false;
+                    }
+                    if (!wasSwiping) {
+                        // clicked on background
+
+                        // restore background dimness
+                        circleAnimWorking = false;
+                        coverEmojiVisible = true;
+                        setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
+                    }
+                } else if (coverEmojiVisible && coverRect.contains((int) event.getX(), (int) event.getY())) {
+                    // detect if clicked on coverEmoji
+                    coverEmojiVisible = false;
+                    circleAnimWorking = true;
+                    startCircleAnim();
+                    return false;
+                }
+                return super.onTouchEvent(event);
+
             }
-            return super.onTouchEvent(event);
-
         }
-
         return super.onTouchEvent(event);
     }
 
