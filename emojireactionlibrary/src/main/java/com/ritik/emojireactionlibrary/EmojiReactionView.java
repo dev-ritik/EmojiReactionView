@@ -81,7 +81,7 @@ public class EmojiReactionView extends AppCompatImageView {
     // Circle center for creating circle
     private int[] circleCentre = new int[2];
     // Raw circle center given by user creating circle
-    private float[] circleCentreGiven = new float[]{-1, -1};
+    private float[] circleCentreGiven = new float[]{-2, -2};
     // Circle radius variable
     private int circleRadius;
     // Raw circle radius variable given by user
@@ -115,7 +115,7 @@ public class EmojiReactionView extends AppCompatImageView {
     // height of the rising emojis(to start disappearing)
     private int emojisRisingHeight;
     // raw height of the rising emojis(to start disappearing) given by user
-    private float emojisRisingHeightGiven = -1;
+    private float emojisRisingHeightGiven = -2;
     // Arraylist storing properties of rising emojis
     private ArrayList<RisingEmoji> risingEmojis = new ArrayList<>();
     // Total number of emojis rising
@@ -177,15 +177,15 @@ public class EmojiReactionView extends AppCompatImageView {
 
             } else if (attr == R.styleable.EmojiReactionView_circle_center_X) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    circleCentreGiven[0] = arr.getDimensionPixelSize(attr, -1);
+                    circleCentreGiven[0] = arr.getDimensionPixelSize(attr, -2);
                 else {
-                    circleCentreGiven[0] = checkFraction(arr.getFraction(attr, 1, 1, -1));
+                    circleCentreGiven[0] = checkFraction(arr.getFraction(attr, -1, -1, -2));
                 }
             } else if (attr == R.styleable.EmojiReactionView_circle_center_Y) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    circleCentreGiven[1] = arr.getDimensionPixelSize(attr, -1);
+                    circleCentreGiven[1] = arr.getDimensionPixelSize(attr, -2);
                 else
-                    circleCentreGiven[1] = checkFraction(arr.getFraction(attr, 1, 1, -1));
+                    circleCentreGiven[1] = checkFraction(arr.getFraction(attr, -1, -1, -2));
             } else if (attr == R.styleable.EmojiReactionView_circle_radius) {
                 circleRadiusGiven = arr.getDimensionPixelSize(attr, -1);
 
@@ -193,7 +193,7 @@ public class EmojiReactionView extends AppCompatImageView {
                 emojiReactSide = arr.getDimensionPixelSize(attr, emojiReactSide);
 
             } else if (attr == R.styleable.EmojiReactionView_emojis_rising_height) {
-                emojisRisingHeightGiven = checkFraction(arr.getFraction(attr, 1, 1, -1));
+                emojisRisingHeightGiven = checkFraction(arr.getFraction(attr, -1, -1, -2));
             } else if (attr == R.styleable.EmojiReactionView_emojis_rising_speed) {
                 emojisRisingSpeed = arr.getDimensionPixelSize(attr, -1);
 
@@ -213,7 +213,7 @@ public class EmojiReactionView extends AppCompatImageView {
 
     private float checkFraction(float input) {
         // Check that percents entered is within [0% 100%]
-        if (input == -1 || (input <= 1 && input >= 0)) {
+        if (input == -2 || (input >= -1 && input <= 0)) {
             return input;
         } else throw new IllegalArgumentException();
     }
@@ -294,19 +294,43 @@ public class EmojiReactionView extends AppCompatImageView {
 
     public void setCoverEmojiVisible() {
         // Make the cover emoji visible
+        if (emojiRising) {
+            emojiRising = false;
+            if (emojiRisingTimer != null) {
+                emojiRisingTimer.cancel();
+                emojiRisingTimer.purge();
+                emojiRisingTimer = null;
+            }
+            fading = 0;
+            startFading = false;
+            if (risingEmojis.size() != 0) risingEmojis.clear();
+        }
         coverEmojiVisible = true;
         circleAnimWorking = false;
         clickingAnimWorking = false;
-        emojiRising = false;
         setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
     }
 
     public void setCircleAnimWorking() {
         // Start Circular animation
+
+        if (emojiMatrix == null) return;
+
+        if (emojiRising) {
+            emojiRising = false;
+            if (emojiRisingTimer != null) {
+                emojiRisingTimer.cancel();
+                emojiRisingTimer.purge();
+                emojiRisingTimer = null;
+            }
+            fading = 0;
+            startFading = false;
+            if (risingEmojis.size() != 0) risingEmojis.clear();
+        }
+
         circleAnimWorking = true;
         coverEmojiVisible = false;
         clickingAnimWorking = false;
-        emojiRising = false;
         invalidate();
     }
 
@@ -350,10 +374,10 @@ public class EmojiReactionView extends AppCompatImageView {
         Log.i("point mi273", "here" + getHeight() + " " + densityFactor);
 
         // set emojisRisingHeight based on user data
-        if (emojisRisingHeightGiven == -1) {
+        if (emojisRisingHeightGiven == -2) {
             emojisRisingHeight = getHeight() / 2;
-        } else if (emojisRisingHeightGiven >= 0 && emojisRisingHeightGiven <= 1) {
-            emojisRisingHeight = (int) (emojisRisingHeightGiven * getHeight());
+        } else if (emojisRisingHeightGiven <= 0 && emojisRisingHeightGiven >= -1) {
+            emojisRisingHeight = getHeight() - (int) (emojisRisingHeightGiven * getHeight());
         }
         setCoverRect();
         setPathCircle();
@@ -378,15 +402,19 @@ public class EmojiReactionView extends AppCompatImageView {
 
     private void setPathCircle() {
         // Set the coordinates for circular animation
-        if (circleCentreGiven[0] == -1)
+        if (circleCentreGiven[0] == -2)
             circleCentre[0] = getWidth() / 2;
-        else if (circleCentreGiven[0] <= 1 && circleCentreGiven[0] >= 0) {
-            circleCentre[0] = (int) (circleCentreGiven[0] * getWidth());
+        else if (circleCentreGiven[0] >= -1 && circleCentreGiven[0] <= 0) {
+            circleCentre[0] = 0 - (int) (circleCentreGiven[0] * getWidth());
+        } else if (circleCentreGiven[0] >= 0) {
+            circleCentre[0] = (int) (circleCentreGiven[0]);
         }
-        if (circleCentreGiven[1] == -1)
+        if (circleCentreGiven[1] == -2)
             circleCentre[1] = getHeight() - emojiReactSide / 2;
-        else if (circleCentreGiven[1] <= 1 && circleCentreGiven[1] >= 0) {
-            circleCentre[1] = (int) (circleCentreGiven[1] * getHeight());
+        else if (circleCentreGiven[1] >= -1 && circleCentreGiven[1] <= 0) {
+            circleCentre[1] = getHeight() + (int) (circleCentreGiven[1] * getHeight());
+        } else if (circleCentreGiven[1] >= 0) {
+            circleCentre[1] = getHeight() - (int) (circleCentreGiven[1]);
         }
         //TODO: need to look somewhat flatter
 
@@ -453,9 +481,6 @@ public class EmojiReactionView extends AppCompatImageView {
                 canvas.drawBitmap(emojiBitmap[clickedEmojiNumber], null, re.getRect(), re.getPaint());
             }
         }
-    }
-
-    public void test() {
     }
 
     private void startCircleAnim() {
@@ -681,7 +706,7 @@ public class EmojiReactionView extends AppCompatImageView {
     public boolean onTouchEvent(MotionEvent event) {
         // respond to touch events
 
-        Log.i("point 596", "onTouchEvent " + event.getAction() + wasSwiping + emojiClicked + ((!wasSwiping || emojiClicked) && (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL)));
+//        Log.i("point 596", "onTouchEvent " + event.getAction() + wasSwiping + emojiClicked + ((!wasSwiping || emojiClicked) && (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL)));
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             // prepare for new gesture
             wasSwiping = false;

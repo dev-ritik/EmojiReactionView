@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -68,16 +67,6 @@ public class MainActivity extends AppCompatActivity {
 //        mRecyclerView.setAdapter(mAdapter);
 //
 //        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
-
-    public void test(View view) {
-//        myImage.test();
-//        Log.i("point 45", myImage.getCentre()[0] + " " + myImage.getCentre()[1]);
-//        Log.i("point 46", myImage.getRadius() + " " + myImage.getClickedEmojiNumber());
-//        Log.i("point 47", myImage.getNumberOfEmojis() + " " + myImage.getEmojisRisingSpeed());
-//        Log.i("point 48", myImage.getCoverRect().left + " " + myImage.getCoverRect().right);
-//        Log.i("point 49", myImage.getCoverSide() + " " + myImage.getCoverCenterX());
-//        Log.i("point 50", myImage.getCoverCenterY() + " " + myImage.getEmojiReactSide());
     }
 
     @Override

@@ -69,15 +69,16 @@ The library provides these attributes to modify default design to a custom one:
 |cover_Center_X       | Set the x coordinate of coverEmoji's center                  | dimensions                                        | 30 * density                        |
 |cover_Center_Y       | Set the y coordinate of coverEmoji's center                  | dimensions                                        | Height - 30 * density               |
 |cover_side           | Set the side length of coverEmoji                            | dimensions                                        | 50 * density                        |
-|circle_center_X      | Set the x coordinate of the center of semi-circular animation| `dimension` or `fraction` [0%,100%] (w.r.t width) | width / 2                           |
+|circle_center_X      | Set the x coordinate of the center of semi-circular animation| `dimension` or `fraction` [0%,100%] (w.r.t width)#| width / 2                           |
 |circle_center_Y      | Set the y coordinate of the center of semi-circular animation| `dimension` or `fraction` [0%,100%] (w.r.t height)| Height - emojiSide / 2              |
 |circle_radius        | Set the radius of semi-circular animation                    | dimension                                         | min(Height,Width) / 2 - 20 * density|
 |emoji_react_side     | Set the side of emojis on the semi-circle                    | dimension                                         | 50 * density                        |
-|emojis_rising_height | Set the height of the rising emojis(to start disappearing)   | `fraction` [0%,100%] (w.r.t height)               | Height / 2                          |
+|emojis_rising_height | Set the height of the rising emojis(to start disappearing)   | `fraction` [0%,100%] (w.r.t height)#              | Height / 2                          |
 |emojis_rising_speed  | Set the speed per frame of the rising emojis                 | dimension                                         | 10 * density                        |
 |emojis_rising_number | Set the number of emojis rising in rising emojis animation   | integer                                           | 24                                  |
 
 *noe = number of emojis.
+*#* from bottom
 # Public methods 
 
 |Method                   |Description                                    |Data Type                   |
