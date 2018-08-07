@@ -25,7 +25,7 @@ Add the following code in your xml file
         android:src="@drawable/image"
         app:emojis="@array/emoji" />
 ```
-where `emoji` is an array resource which is the address to all emojis to be in the semi-circle like:
+where `emoji` is an array resource which is the address to all emojis to be in the panel like:
 ```xml
 
     <array name="emoji">
@@ -35,8 +35,8 @@ where `emoji` is an array resource which is the address to all emojis to be in t
     </array>
 ```
 
-and for the cover emoji, rename that to **cover**, so that its resource id becomes `R.drawable.cover`
-to override default cover emoji originally set.
+and for the home emoji, rename that to **home**, so that its resource id becomes `R.drawable.home`
+to override default home emoji originally set.
 
 To get notified of when the emojis are clicked, you can use:
 ```java
@@ -66,19 +66,19 @@ The library provides these attributes to modify default design to a custom one:
 |---------------------|--------------------------------------------------------------|---------------------------------------------------|-------------------------------------|
 |emojis               | Set the Emojis to be displayed in the semi-circular animation| reference                                         |                                     |
 |set_emoji            | Set the current selected emoji                               | integer(>-1)(< noe*) (0 based)                    | -1                                  |
-|cover_Center_X       | Set the x coordinate of coverEmoji's center                  | dimensions                                        | 30 * density                        |
-|cover_Center_Y       | Set the y coordinate of coverEmoji's center                  | dimensions                                        | Height - 30 * density               |
-|cover_side           | Set the side length of coverEmoji                            | dimensions                                        | 50 * density                        |
-|circle_center_X      | Set the x coordinate of the center of semi-circular animation| `dimension` or `fraction` [0%,100%] (w.r.t width)#| width / 2                           |
-|circle_center_Y      | Set the y coordinate of the center of semi-circular animation| `dimension` or `fraction` [0%,100%] (w.r.t height)| Height - emojiSide / 2              |
-|circle_radius        | Set the radius of semi-circular animation                    | dimension                                         | min(Height,Width) / 2 - 20 * density|
-|emoji_react_side     | Set the side of emojis on the semi-circle                    | dimension                                         | 50 * density                        |
+|home_Center_X       | Set the x coordinate of homeEmoji's center                  | dimensions                                        | 30 * density                        |
+|home_Center_Y       | Set the y coordinate of homeEmoji's center                  | dimensions                                        | Height - 30 * density               |
+|home_side           | Set the side length of homeEmoji                            | dimensions                                        | 50 * density                        |
+|panel_center_X      | Set the x coordinate of the center of semi-circular animation| `dimension` or `fraction` [0%,100%] (w.r.t width)#| width / 2                           |
+|panel_center_Y      | Set the y coordinate of the center of semi-circular animation| `dimension` or `fraction` [0%,100%] (w.r.t height)| Height - emojiSide / 2              |
+|panel_radius        | Set the radius of semi-circular animation                    | dimension                                         | min(Height,Width) / 2 - 20 * density|
+|panel_emoji_side     | Set the side of emojis on the panel                    | dimension                                         | 50 * density                        |
 |emojis_rising_height | Set the height of the rising emojis(to start disappearing)   | `fraction` [0%,100%] (w.r.t height)#              | Height / 2                          |
 |emojis_rising_speed  | Set the speed per frame of the rising emojis                 | dimension                                         | 10 * density                        |
 |emojis_rising_number | Set the number of emojis rising in rising emojis animation   | integer                                           | 24                                  |
 
-*noe = number of emojis.
-*#* from bottom
+*noe = number of emojis.<br>
+*#* measurement from bottom
 # Public methods 
 
 |Method                   |Description                                    |Data Type                   |
@@ -86,17 +86,17 @@ The library provides these attributes to modify default design to a custom one:
 |getCentre                | Get the center of semi-circular animation     | int(Pixels)                |
 |getRadius                | Get the radius of semi-circular animation     | int(Pixels)                |
 |get/SetClickedEmojiNumber| Get/Set the current selected emoji            | int (-1 for none)(0 based) |
-|getNumberOfEmojis        | Get the number Of emojis in the semi-circle   | int                        |
+|getNumberOfEmojis        | Get the number Of emojis in the panel   | int                        |
 |getEmojisRisingSpeed     | Get the speed per frame of the rising emojis  | int(Pixels)                |
-|getCoverRect             | Get the Rect of the cover emoji               | Rect                       |
-|getEmojiReactSide        | Get the side of emojis on the semi-circle     | int(Pixels)                |
-|get/SetCoverBitmap       | Get/Set the bitmap of the cover emoji         | Bitmap                     |
-|isCoverEmojiVisible      | Is cover emoji visible                        | boolean                    |
-|isCircleAnimWorking      | Is semi-circle visible                        | boolean                    |
+|getHomeRect             | Get the Rect of the home emoji               | Rect                       |
+|getPanelEmojiSide        | Get the side of emojis on the panel     | int(Pixels)                |
+|get/SetHomeBitmap       | Get/Set the bitmap of the home emoji         | Bitmap                     |
+|isHomeEmojiVisible      | Is home emoji visible                        | boolean                    |
+|isPanelAnimWorking      | Is panel visible                        | boolean                    |
 |isClickingAnimWorking    | Is the clicking animation working             | boolean                    |
 |isEmojiRising            | Is emoji rising animation visible             | boolean                    |
-|setCoverEmojiVisible     | Switch to cover bitmap visible mode           | boolean                    |
-|setCircleAnimWorking     | Start the circular animation                  | boolean                    |
+|setHomeEmojiVisible     | Switch to home bitmap visible mode           | boolean                    |
+|setPanelAnimWorking     | Start the circular animation                  | boolean                    |
 
 # Contributions!
 

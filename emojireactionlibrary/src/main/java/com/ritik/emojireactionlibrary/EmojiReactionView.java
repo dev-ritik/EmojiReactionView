@@ -20,7 +20,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.animation.AccelerateInterpolator;
 
@@ -57,45 +56,47 @@ public class EmojiReactionView extends AppCompatImageView {
     private int smallerDimension;
     // boolean to declare if a touch gesture was a swipe
     private boolean wasSwiping = false;
-    // boolean to declare if a touch gesture was a swipe and started from an emoji on circle
+    // boolean to declare if a touch gesture was a swipe and started from an emoji on panel
     private boolean emojiClicked = false;
 
-    /// Cover emoji variables
+    /// Home emoji variables
 
-    // Cover emoji rect variable
-    private Rect coverRect = new Rect();
-    // Length of side of cover rect
-    private int coverSide = (int) (50 * densityFactor);
-    // Cover emoji center
-    private int[] coverCenter = new int[]{(int) (30 * densityFactor), 0};
-    // Raw cover emoji center Y coordinate given by the user
-    private float coverCenterYGiven = -1;
-    // Cover emoji bitmap
-    private Bitmap coverBitmap;
-    // Boolean to make cover emoji visible
-    private boolean coverEmojiVisible;
+    // Home emoji rect variable
+    private Rect homeRect = new Rect();
+    // Length of side of home rect
+    private int homeSide = (int) (50 * densityFactor);
+    // Home emoji center
+    private int[] homeCenter = new int[]{(int) (30 * densityFactor), 0};
+    // Raw home emoji center Y coordinate given by the user
+    private float homeCenterYGiven = -1;
+    // Home emoji bitmap
+    private Bitmap homeBitmap;
+    // Boolean to make home emoji visible
+    private boolean homeEmojiVisible;
 
     //TODO: can be improved in landscape mode!!
     /// Circular Animation Variables
 
-    // Circle center for creating circle
-    private int[] circleCentre = new int[2];
-    // Raw circle center given by user creating circle
-    private float[] circleCentreGiven = new float[]{-2, -2};
-    // Circle radius variable
-    private int circleRadius;
-    // Raw circle radius variable given by user
-    private int circleRadiusGiven = -1;
+    // Panel center
+    private int[] panelCentre = new int[2];
+    // Raw panel center given by user
+    private float[] panelCentreGiven = new float[]{-2, -2};
+    // Panel radius variable
+    private int panelRadius;
+    // Raw panel radius variable given by user
+    private int panelRadiusGiven = -1;
     // Emoji icon side length
-    private int emojiReactSide = (int) (50 * densityFactor);
+    private int panelEmojiSide = (int) (50 * densityFactor);
     // Coordinates for emoji translation
     private int[][] emojiMovingPoint;
     // Variable used to measure the length of a path, and/or to find the position and tangent along it
     private PathMeasure[] pms;
     // Boolean checks whether animation is working or not
-    private boolean circleAnimWorking;
+    private boolean panelAnimWorking;
     // Matrix is used emojis that are present in circular reveal as there is a rotating animation for them
     private Matrix[] emojiMatrix;
+    int iCurStep = 20;// current step
+    int iCurStepTaken = 0;// current steps total
 
     /// Variables for clicking and un-clicking gesture detection
 
@@ -103,8 +104,6 @@ public class EmojiReactionView extends AppCompatImageView {
     private int clickedRadius;
     // Paint object for creating a white background around the emoji when clicked
     private Paint clickedPaint = new Paint();
-    int iCurStep = 20;// current step
-    int iCurStepTaken = 0;// current steps total
     // Boolean to check that click animation is working or not
     private boolean clickingAnimWorking;
 
@@ -150,7 +149,7 @@ public class EmojiReactionView extends AppCompatImageView {
     final void initBaseXMLAttrs(Context context, AttributeSet attrs) {
         final TypedArray arr = context.obtainStyledAttributes(attrs, R.styleable.EmojiReactionView);
 
-        Log.i("point mi88", "attrs" + densityFactor);
+//        Log.i("point 152", "attrs" );
         final int N = arr.getIndexCount();
         for (int i = 0; i < N; ++i) {
             int attr = arr.getIndex(i);
@@ -166,31 +165,31 @@ public class EmojiReactionView extends AppCompatImageView {
 
             } else if (attr == R.styleable.EmojiReactionView_set_emoji) {
                 clickedEmojiNumber = arr.getInt(attr, clickedEmojiNumber);
-            } else if (attr == R.styleable.EmojiReactionView_cover_Center_X) {
-                coverCenter[0] = arr.getDimensionPixelSize(attr, coverCenter[0]);
+            } else if (attr == R.styleable.EmojiReactionView_home_Center_X) {
+                homeCenter[0] = arr.getDimensionPixelSize(attr, homeCenter[0]);
 
-            } else if (attr == R.styleable.EmojiReactionView_cover_Center_Y) {
-                coverCenterYGiven = arr.getDimensionPixelSize(attr, -1);
+            } else if (attr == R.styleable.EmojiReactionView_home_Center_Y) {
+                homeCenterYGiven = arr.getDimensionPixelSize(attr, -1);
 
-            } else if (attr == R.styleable.EmojiReactionView_cover_side) {
-                coverSide = arr.getDimensionPixelSize(attr, coverSide);
+            } else if (attr == R.styleable.EmojiReactionView_home_side) {
+                homeSide = arr.getDimensionPixelSize(attr, homeSide);
 
-            } else if (attr == R.styleable.EmojiReactionView_circle_center_X) {
+            } else if (attr == R.styleable.EmojiReactionView_panel_center_X) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    circleCentreGiven[0] = arr.getDimensionPixelSize(attr, -2);
+                    panelCentreGiven[0] = arr.getDimensionPixelSize(attr, -2);
                 else {
-                    circleCentreGiven[0] = checkFraction(arr.getFraction(attr, -1, -1, -2));
+                    panelCentreGiven[0] = checkFraction(arr.getFraction(attr, -1, -1, -2));
                 }
-            } else if (attr == R.styleable.EmojiReactionView_circle_center_Y) {
+            } else if (attr == R.styleable.EmojiReactionView_panel_center_Y) {
                 if (arr.peekValue(attr).type == TYPE_DIMENSION)
-                    circleCentreGiven[1] = arr.getDimensionPixelSize(attr, -2);
+                    panelCentreGiven[1] = arr.getDimensionPixelSize(attr, -2);
                 else
-                    circleCentreGiven[1] = checkFraction(arr.getFraction(attr, -1, -1, -2));
-            } else if (attr == R.styleable.EmojiReactionView_circle_radius) {
-                circleRadiusGiven = arr.getDimensionPixelSize(attr, -1);
+                    panelCentreGiven[1] = checkFraction(arr.getFraction(attr, -1, -1, -2));
+            } else if (attr == R.styleable.EmojiReactionView_panel_radius) {
+                panelRadiusGiven = arr.getDimensionPixelSize(attr, -1);
 
-            } else if (attr == R.styleable.EmojiReactionView_emoji_react_side) {
-                emojiReactSide = arr.getDimensionPixelSize(attr, emojiReactSide);
+            } else if (attr == R.styleable.EmojiReactionView_panel_emoji_side) {
+                panelEmojiSide = arr.getDimensionPixelSize(attr, panelEmojiSide);
 
             } else if (attr == R.styleable.EmojiReactionView_emojis_rising_height) {
                 emojisRisingHeightGiven = checkFraction(arr.getFraction(attr, -1, -1, -2));
@@ -219,11 +218,11 @@ public class EmojiReactionView extends AppCompatImageView {
     }
 
     public int[] getCentre() {
-        return circleCentre;
+        return panelCentre;
     }
 
     public float getRadius() {
-        return circleRadius;
+        return panelRadius;
     }
 
     public int getClickedEmojiNumber() {
@@ -248,7 +247,7 @@ public class EmojiReactionView extends AppCompatImageView {
         // Get the Emoji to be displayed in Bitmap
         if (emojiBitmap == null) emojiBitmap = new Bitmap[numberOfEmojis];
         if (clickedEmojiNumber != -1 && emojiBitmap[clickedEmojiNumber] == null)
-            emojiBitmap[clickedEmojiNumber] = getBitmapFromId(emojiId.get(clickedEmojiNumber), emojiReactSide);
+            emojiBitmap[clickedEmojiNumber] = getBitmapFromId(emojiId.get(clickedEmojiNumber), panelEmojiSide);
         invalidate();
     }
 
@@ -260,28 +259,28 @@ public class EmojiReactionView extends AppCompatImageView {
         return emojisRisingSpeed;
     }
 
-    public Rect getCoverRect() {
-        return coverRect;
+    public Rect getHomeRect() {
+        return homeRect;
     }
 
-    public int getEmojiReactSide() {
-        return emojiReactSide;
+    public int getPanelEmojiSide() {
+        return panelEmojiSide;
     }
 
-    public Bitmap getCoverBitmap() {
-        return coverBitmap;
+    public Bitmap getHomeBitmap() {
+        return homeBitmap;
     }
 
-    public void setCoverBitmap(Bitmap coverBitmap) {
-        this.coverBitmap = coverBitmap;
+    public void setHomeBitmap(Bitmap homeBitmap) {
+        this.homeBitmap = homeBitmap;
     }
 
-    public boolean isCoverEmojiVisible() {
-        return coverEmojiVisible;
+    public boolean isHomeEmojiVisible() {
+        return homeEmojiVisible;
     }
 
-    public boolean isCircleAnimWorking() {
-        return circleAnimWorking;
+    public boolean isPanelAnimWorking() {
+        return panelAnimWorking;
     }
 
     public boolean isClickingAnimWorking() {
@@ -292,8 +291,8 @@ public class EmojiReactionView extends AppCompatImageView {
         return emojiRising;
     }
 
-    public void setCoverEmojiVisible() {
-        // Make the cover emoji visible
+    public void setHomeEmojiVisible() {
+        // Make the home emoji visible
         if (emojiRising) {
             emojiRising = false;
             if (emojiRisingTimer != null) {
@@ -305,13 +304,13 @@ public class EmojiReactionView extends AppCompatImageView {
             startFading = false;
             if (risingEmojis.size() != 0) risingEmojis.clear();
         }
-        coverEmojiVisible = true;
-        circleAnimWorking = false;
+        homeEmojiVisible = true;
+        panelAnimWorking = false;
         clickingAnimWorking = false;
         setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
     }
 
-    public void setCircleAnimWorking() {
+    public void setPanelAnimWorking() {
         // Start Circular animation
 
         if (emojiMatrix == null) return;
@@ -328,8 +327,8 @@ public class EmojiReactionView extends AppCompatImageView {
             if (risingEmojis.size() != 0) risingEmojis.clear();
         }
 
-        circleAnimWorking = true;
-        coverEmojiVisible = false;
+        panelAnimWorking = true;
+        homeEmojiVisible = false;
         clickingAnimWorking = false;
         invalidate();
     }
@@ -340,27 +339,27 @@ public class EmojiReactionView extends AppCompatImageView {
     }
 
     private void init() {
-        Log.i("point mi73", "init" + densityFactor + " " + getWidth());
+//        Log.i("point 343", "init " + getWidth());
 
         // The paint which dims the background on circular animation
         clickedPaint.setColor(Color.argb(150, 185, 185, 185));
 
         // Get the Emoji to be displayed in Bitmap
         if (clickedEmojiNumber != -1) {
-            emojiBitmap[clickedEmojiNumber] = getBitmapFromId(emojiId.get(clickedEmojiNumber), emojiReactSide);
+            emojiBitmap[clickedEmojiNumber] = getBitmapFromId(emojiId.get(clickedEmojiNumber), panelEmojiSide);
         }
 
         setup();
     }
 
     private void setup() {
-        Log.i("point 158", "setup" + getWidth() + " " + densityFactor);
+//        Log.i("point 357", "setup" + getWidth() + " ");
         if (emojiId == null) {
             return;
         }
         if (numberOfEmojis == 0) {
-            coverEmojiVisible = false;
-            circleAnimWorking = false;
+            homeEmojiVisible = false;
+            panelAnimWorking = false;
             clickingAnimWorking = false;
             emojiRising = false;
             return;
@@ -371,7 +370,7 @@ public class EmojiReactionView extends AppCompatImageView {
         } else {
             smallerDimension = getHeight() > getWidth() ? getWidth() : getHeight();
         }
-        Log.i("point mi273", "here" + getHeight() + " " + densityFactor);
+//        Log.i("point 374", "here" + getHeight() + " ");
 
         // set emojisRisingHeight based on user data
         if (emojisRisingHeightGiven == -2) {
@@ -379,53 +378,53 @@ public class EmojiReactionView extends AppCompatImageView {
         } else if (emojisRisingHeightGiven <= 0 && emojisRisingHeightGiven >= -1) {
             emojisRisingHeight = getHeight() - (int) (emojisRisingHeightGiven * getHeight());
         }
-        setCoverRect();
-        setPathCircle();
+        setHomeRect();
+        setPathPanel();
 
-        coverEmojiVisible = true;
+        homeEmojiVisible = true;
     }
 
-    private void setCoverRect() {
-        // Set the coverRect y coordinate based on user data
-        if (coverCenterYGiven == -1) {
-            coverCenter[1] = getHeight() - (int) (30 * densityFactor);
+    private void setHomeRect() {
+        // Set the homeRect y coordinate based on user data
+        if (homeCenterYGiven == -1) {
+            homeCenter[1] = getHeight() - (int) (30 * densityFactor);
         } else {
-            coverCenter[1] = (int) (getHeight() - coverCenterYGiven);
+            homeCenter[1] = (int) (getHeight() - homeCenterYGiven);
         }
 
-        // Set the coverBitmap with the default Bitmap
-        // use R.drawable.cover to access or modify it
-        coverBitmap = getBitmapFromId(R.drawable.cover, coverSide);
-        // Set the cover Rect
-        coverRect = new Rect((coverCenter[0] - coverSide / 2), (coverCenter[1] - coverSide / 2), (coverCenter[0] + coverSide / 2), (coverCenter[1] + coverSide / 2));
+        // Set the homeBitmap with the default Bitmap
+        // use R.drawable.home to access or modify it
+        homeBitmap = getBitmapFromId(R.drawable.home, homeSide);
+        // Set the home Rect
+        homeRect = new Rect((homeCenter[0] - homeSide / 2), (homeCenter[1] - homeSide / 2), (homeCenter[0] + homeSide / 2), (homeCenter[1] + homeSide / 2));
     }
 
-    private void setPathCircle() {
+    private void setPathPanel() {
         // Set the coordinates for circular animation
-        if (circleCentreGiven[0] == -2)
-            circleCentre[0] = getWidth() / 2;
-        else if (circleCentreGiven[0] >= -1 && circleCentreGiven[0] <= 0) {
-            circleCentre[0] = 0 - (int) (circleCentreGiven[0] * getWidth());
-        } else if (circleCentreGiven[0] >= 0) {
-            circleCentre[0] = (int) (circleCentreGiven[0]);
+        if (panelCentreGiven[0] == -2)
+            panelCentre[0] = getWidth() / 2;
+        else if (panelCentreGiven[0] >= -1 && panelCentreGiven[0] <= 0) {
+            panelCentre[0] = 0 - (int) (panelCentreGiven[0] * getWidth());
+        } else if (panelCentreGiven[0] >= 0) {
+            panelCentre[0] = (int) (panelCentreGiven[0]);
         }
-        if (circleCentreGiven[1] == -2)
-            circleCentre[1] = getHeight() - emojiReactSide / 2;
-        else if (circleCentreGiven[1] >= -1 && circleCentreGiven[1] <= 0) {
-            circleCentre[1] = getHeight() + (int) (circleCentreGiven[1] * getHeight());
-        } else if (circleCentreGiven[1] >= 0) {
-            circleCentre[1] = getHeight() - (int) (circleCentreGiven[1]);
+        if (panelCentreGiven[1] == -2)
+            panelCentre[1] = getHeight() - panelEmojiSide / 2;
+        else if (panelCentreGiven[1] >= -1 && panelCentreGiven[1] <= 0) {
+            panelCentre[1] = getHeight() + (int) (panelCentreGiven[1] * getHeight());
+        } else if (panelCentreGiven[1] >= 0) {
+            panelCentre[1] = getHeight() - (int) (panelCentreGiven[1]);
         }
         //TODO: need to look somewhat flatter
 
         // Set the radius of circular animation
-        if (circleRadiusGiven == -1) {
-            circleRadius = (int) (smallerDimension / 2 - 20 * densityFactor);
+        if (panelRadiusGiven == -1) {
+            panelRadius = (int) (smallerDimension / 2 - 20 * densityFactor);
         } else {
-            circleRadius = smallerDimension / 2 > circleRadiusGiven ? circleRadiusGiven : smallerDimension / 2;
+            panelRadius = smallerDimension / 2 > panelRadiusGiven ? panelRadiusGiven : smallerDimension / 2;
         }
 
-        clickedRadius = (int) (emojiReactSide * 0.7);
+        clickedRadius = (int) (panelEmojiSide * 0.7);
         // angle between successive emojis
         double angle = Math.PI / (numberOfEmojis + 1);
 
@@ -434,8 +433,8 @@ public class EmojiReactionView extends AppCompatImageView {
         pms = new PathMeasure[numberOfEmojis];
         for (int i = 1; i <= numberOfEmojis; i++) {
             emojiPath1 = new Path();
-            emojiPath1.moveTo(circleCentre[0], circleCentre[1]);
-            emojiPath1.lineTo((float) (circleCentre[0] + circleRadius * Math.cos(i * angle + Math.PI)), (float) (circleCentre[1] + circleRadius * Math.sin(i * angle + Math.PI)));
+            emojiPath1.moveTo(panelCentre[0], panelCentre[1]);
+            emojiPath1.lineTo((float) (panelCentre[0] + panelRadius * Math.cos(i * angle + Math.PI)), (float) (panelCentre[1] + panelRadius * Math.sin(i * angle + Math.PI)));
             pms[i - 1] = new PathMeasure(emojiPath1, false);
         }
 
@@ -443,16 +442,16 @@ public class EmojiReactionView extends AppCompatImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-//        Log.i("point mi113", "draw");
+//        Log.i("point 446", "draw");
         super.onDraw(canvas);
 
-        if (coverEmojiVisible)
-            // To make cover emoji visible
+        if (homeEmojiVisible)
+            // To make home emoji visible
             if (clickedEmojiNumber == -1)
-                canvas.drawBitmap(coverBitmap, null, coverRect, null);
-            else canvas.drawBitmap(emojiBitmap[clickedEmojiNumber], null, coverRect, null);
+                canvas.drawBitmap(homeBitmap, null, homeRect, null);
+            else canvas.drawBitmap(emojiBitmap[clickedEmojiNumber], null, homeRect, null);
 
-        if (circleAnimWorking) {
+        if (panelAnimWorking) {
             // to start circular animation
             // to display clicked circle on clicked emoji
             if (clickedEmojiNumber != -1) {
@@ -461,7 +460,7 @@ public class EmojiReactionView extends AppCompatImageView {
             for (int i = 0; i < numberOfEmojis; i++) {
                 canvas.drawBitmap(emojiBitmap[i], emojiMatrix[i], null);
             }
-            startCircleAnim();
+            startPanelAnim();
         }
 
         if (clickingAnimWorking) {
@@ -483,7 +482,7 @@ public class EmojiReactionView extends AppCompatImageView {
         }
     }
 
-    private void startCircleAnim() {
+    private void startPanelAnim() {
         // start circular animation
 
         // float array to store new coordinates
@@ -494,10 +493,10 @@ public class EmojiReactionView extends AppCompatImageView {
             emojiMatrix = new Matrix[numberOfEmojis];
         }
 
-        // get emojibitmap from their ids
+        // get emojiBitmap from their ids
         for (int i = 0; i < numberOfEmojis; i++) {
             if (emojiBitmap[i] == null) {
-                emojiBitmap[i] = getBitmapFromId(emojiId.get(i), emojiReactSide);
+                emojiBitmap[i] = getBitmapFromId(emojiId.get(i), panelEmojiSide);
             }
         }
 
@@ -516,10 +515,10 @@ public class EmojiReactionView extends AppCompatImageView {
                 pms[i].getPosTan(fSegmentLen * iCurStepTaken, emojiMovingPointFloat, null);
                 emojiMovingPoint[i] = convertFloatArrayToIntArray(emojiMovingPointFloat, emojiMovingPoint[i]);
                 emojiMatrix[i] = new Matrix();
-//                int scale = emojiReactSide / emojiBitmap[0].getHeight();
+//                int scale = panelEmojiSide / emojiBitmap[0].getHeight();
 //                emojiMatrix.get(i).setScale(scale, scale);
                 // move bitmap to the coordinate
-                emojiMatrix[i].postTranslate(emojiMovingPoint[i][0] - emojiReactSide / 2, emojiMovingPoint[i][1] - emojiReactSide / 2);
+                emojiMatrix[i].postTranslate(emojiMovingPoint[i][0] - panelEmojiSide / 2, emojiMovingPoint[i][1] - panelEmojiSide / 2);
                 // rotate it with required effect
                 emojiMatrix[i].postRotate((iCurStep) * (75 - 150 * (i + 1) / (numberOfEmojis + 1)) / 20, emojiMovingPoint[i][0], emojiMovingPoint[i][1]);
             }
@@ -543,7 +542,7 @@ public class EmojiReactionView extends AppCompatImageView {
     private void startClickingAnim(final int clickedIndex) {
         // start clicking animation
 
-        circleAnimWorking = false;
+        panelAnimWorking = false;
         clickingAnimWorking = true;
         ValueAnimator animator = ValueAnimator.ofFloat(1, 0.4f);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -551,7 +550,7 @@ public class EmojiReactionView extends AppCompatImageView {
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 // reduce clicked emoji by reducing its scale and translating it to the required position
                 emojiMatrix[clickedIndex].setScale((float) valueAnimator.getAnimatedValue(), (float) valueAnimator.getAnimatedValue());
-                emojiMatrix[clickedIndex].postTranslate(emojiMovingPoint[clickedIndex][0] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2, emojiMovingPoint[clickedIndex][1] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2);
+                emojiMatrix[clickedIndex].postTranslate(emojiMovingPoint[clickedIndex][0] - (float) valueAnimator.getAnimatedValue() * panelEmojiSide / 2, emojiMovingPoint[clickedIndex][1] - (float) valueAnimator.getAnimatedValue() * panelEmojiSide / 2);
                 invalidate();
             }
         });
@@ -575,7 +574,7 @@ public class EmojiReactionView extends AppCompatImageView {
     private void startUnclickingAnim(final int clickedIndex) {
         // start unclicking animation
 
-        circleAnimWorking = false;
+        panelAnimWorking = false;
         clickingAnimWorking = true;
         ValueAnimator animator = ValueAnimator.ofFloat(1, 0.4f);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -583,10 +582,10 @@ public class EmojiReactionView extends AppCompatImageView {
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 // reduce clicked emoji by reducing its scale and translating it to the required position
                 emojiMatrix[clickedIndex].setScale((float) valueAnimator.getAnimatedValue(), (float) valueAnimator.getAnimatedValue());
-                emojiMatrix[clickedIndex].postTranslate(emojiMovingPoint[clickedIndex][0] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2, emojiMovingPoint[clickedIndex][1] - (float) valueAnimator.getAnimatedValue() * emojiReactSide / 2);
+                emojiMatrix[clickedIndex].postTranslate(emojiMovingPoint[clickedIndex][0] - (float) valueAnimator.getAnimatedValue() * panelEmojiSide / 2, emojiMovingPoint[clickedIndex][1] - (float) valueAnimator.getAnimatedValue() * panelEmojiSide / 2);
 
-                // reduce the size of background circle radius
-                clickedRadius = (int) (emojiReactSide * (float) valueAnimator.getAnimatedValue() * 0.7);
+                // reduce the size of background panel radius
+                clickedRadius = (int) (panelEmojiSide * (float) valueAnimator.getAnimatedValue() * 0.7);
                 invalidate();
             }
         });
@@ -595,10 +594,10 @@ public class EmojiReactionView extends AppCompatImageView {
             public void onAnimationEnd(Animator animation) {
                 clickingAnimWorking = false;
                 clickedEmojiNumber = -1;
-                coverEmojiVisible = true;
+                homeEmojiVisible = true;
                 // restore background dimness
                 setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
-                clickedRadius = (int) (emojiReactSide * 0.7);
+                clickedRadius = (int) (panelEmojiSide * 0.7);
             }
         });
         animator.setDuration(600);
@@ -611,7 +610,7 @@ public class EmojiReactionView extends AppCompatImageView {
 
         // directly invalidate if numberOfRisers<=0
         if (numberOfRisers <= 0) {
-            coverEmojiVisible = true;
+            homeEmojiVisible = true;
             invalidate();
             return;
         }
@@ -620,7 +619,7 @@ public class EmojiReactionView extends AppCompatImageView {
 
         //set up emojis with random behaviour at random position
         for (int i = 0; i < numberOfRisers; i++) {
-            Rect risingRect = calculateNewRect(new Rect(), new Random().nextInt(getWidth() + 1), getHeight() + new Random().nextInt(2 * getHeight() / 5), new Random().nextInt(emojiReactSide / 4) + emojiReactSide / 3);
+            Rect risingRect = calculateNewRect(new Rect(), new Random().nextInt(getWidth() + 1), getHeight() + new Random().nextInt(2 * getHeight() / 5), new Random().nextInt(panelEmojiSide / 4) + panelEmojiSide / 3);
             risingEmojis.add(new RisingEmoji(risingRect, new Random().nextInt(6) + emojisRisingSpeed));
         }
         // start animation
@@ -691,7 +690,7 @@ public class EmojiReactionView extends AppCompatImageView {
                     emojiRisingTimer.purge();
                     emojiRisingTimer = null;
                 }
-                coverEmojiVisible = true;
+                homeEmojiVisible = true;
                 fading = 0;
                 startFading = false;
                 break;
@@ -706,12 +705,12 @@ public class EmojiReactionView extends AppCompatImageView {
     public boolean onTouchEvent(MotionEvent event) {
         // respond to touch events
 
-//        Log.i("point 596", "onTouchEvent " + event.getAction() + wasSwiping + emojiClicked + ((!wasSwiping || emojiClicked) && (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL)));
+//        Log.i("point 709", "onTouchEvent " + event.getAction() + wasSwiping + emojiClicked );
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             // prepare for new gesture
             wasSwiping = false;
             emojiClicked = false;
-            if (circleAnimWorking) {
+            if (panelAnimWorking) {
                 for (int i = numberOfEmojis - 1; i >= 0; i--) {
                     if (clickedOnEmojiReact(i, event.getX(), event.getY())) {
                         emojiClicked = true;
@@ -729,13 +728,13 @@ public class EmojiReactionView extends AppCompatImageView {
 
         } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
             if (wasSwiping && !emojiClicked) {
-                // gesture ends with coverEmoji visible
-                circleAnimWorking = false;
-                coverEmojiVisible = true;
+                // gesture ends with homeEmoji visible
+                panelAnimWorking = false;
+                homeEmojiVisible = true;
                 setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
             } else {
                 // time to respond to clicks on emojiRect
-                if (circleAnimWorking) {
+                if (panelAnimWorking) {
                     // detect if clicked on EmojiReact
                     for (int i = numberOfEmojis - 1; i >= 0; i--) {
                         if (clickedOnEmojiReact(i, event.getX(), event.getY())) {
@@ -767,15 +766,15 @@ public class EmojiReactionView extends AppCompatImageView {
                         // clicked on background
 
                         // restore background dimness
-                        circleAnimWorking = false;
-                        coverEmojiVisible = true;
+                        panelAnimWorking = false;
+                        homeEmojiVisible = true;
                         setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
                     }
-                } else if (coverEmojiVisible && coverRect.contains((int) event.getX(), (int) event.getY())) {
-                    // detect if clicked on coverEmoji
-                    coverEmojiVisible = false;
-                    circleAnimWorking = true;
-                    startCircleAnim();
+                } else if (homeEmojiVisible && homeRect.contains((int) event.getX(), (int) event.getY())) {
+                    // detect if clicked on homeEmoji
+                    homeEmojiVisible = false;
+                    panelAnimWorking = true;
+                    startPanelAnim();
                     return false;
                 }
                 return super.onTouchEvent(event);
@@ -786,7 +785,7 @@ public class EmojiReactionView extends AppCompatImageView {
     }
 
     private boolean clickedOnEmojiReact(int i, double x, double y) {
-        return (Math.abs(x - emojiMovingPoint[i][0]) < emojiReactSide / 2 && Math.abs(y - emojiMovingPoint[i][1]) < emojiReactSide / 2);
+        return (Math.abs(x - emojiMovingPoint[i][0]) < panelEmojiSide / 2 && Math.abs(y - emojiMovingPoint[i][1]) < panelEmojiSide / 2);
     }
 
     private boolean clickedOnRing(float x, float y, int clickedEmojiNumber) {

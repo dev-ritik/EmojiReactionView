@@ -8,18 +8,18 @@
         <attr name="emojis" format="reference" />
         <attr name="set_emoji" format="integer" />
 
-        /// Cover emoji Attributes
+        /// Home emoji Attributes
 
-        <attr name="cover_Center_X" format="dimension" />
-        <attr name="cover_Center_Y" format="dimension" />
-        <attr name="cover_side" format="dimension" />
+        <attr name="home_Center_X" format="dimension" />
+        <attr name="home_Center_Y" format="dimension" />
+        <attr name="home_side" format="dimension" />
 
-        /// Circular Animation Attributes
+        /// Panel Animation Attributes
 
-        <attr name="circle_center_X" format="dimension|fraction" />
-        <attr name="circle_center_Y" format="dimension|fraction" />
-        <attr name="circle_radius" format="dimension" />
-        <attr name="emoji_react_side" format="dimension" />
+        <attr name="panel_center_X" format="dimension|fraction" />
+        <attr name="panel_center_Y" format="dimension|fraction" />
+        <attr name="panel_radius" format="dimension" />
+        <attr name="panel_emoji_side" format="dimension" />
 
         /// Rising Emojis Attributes
 
