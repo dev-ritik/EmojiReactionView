@@ -29,8 +29,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupTabIcons() {
-        tabLayout.getTabAt(0).setIcon(R.drawable.em1_min);
-        tabLayout.getTabAt(1).setIcon(R.drawable.em2_min);
+        tabLayout.getTabAt(0).setIcon(R.drawable.baseline_image_24);
+        tabLayout.getTabAt(1).setIcon(R.drawable.outline_view_day_24);
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -68,9 +68,5 @@ public class MainActivity extends AppCompatActivity {
             return mFragmentTitleList.get(position);
         }
     }
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        outState.putInt("emojiNumber", clickedEmoji);
-//        super.onSaveInstanceState(outState);
-//    }
+//
 }

@@ -2,11 +2,11 @@
     <string name="app_name">EmojiReactionView</string>
 
     <array name="emoji">
-        <item>@drawable/em1_min</item>
-        <item>@drawable/em2_min</item>
-        <item>@drawable/em3</item>
-        <item>@drawable/em1_min</item>
-        <item>@drawable/em2_min</item>
-        <item>@drawable/em3</item>
+        <item>@drawable/emoji1</item>
+        <item>@drawable/emoji2</item>
+        <item>@drawable/emoji3</item>
+        <item>@drawable/emoji4</item>
+        <item>@drawable/emoji5</item>
+        <item>@drawable/emoji6 </item>
     </array>
 </resources>

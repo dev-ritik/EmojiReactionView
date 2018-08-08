@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +14,10 @@ import com.ritik.emojireactionlibrary.ClickInterface;
 import com.ritik.emojireactionlibrary.EmojiReactionView;
 
 import java.util.ArrayList;
+
+/**
+ * This class is the adapter for displaying sample feeds
+ */
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     private ArrayList<Feed> mDataSet;
@@ -28,10 +31,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         private ViewHolder(View view) {
             super(view);
             photo = view.findViewById(R.id.photoImageView);
-            messageTextView =  view.findViewById(R.id.messageTextView);
+            messageTextView = view.findViewById(R.id.messageTextView);
 
-            timeTextView =  view.findViewById(R.id.time);
-            name =  view.findViewById(R.id.name);
+            timeTextView = view.findViewById(R.id.time);
+            name = view.findViewById(R.id.name);
         }
     }
 
@@ -61,20 +64,24 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 //        Log.i("point fa50","bind");
         final Feed feed = mDataSet.get(position);
 
-        holder.messageTextView.setText(feed.getMessage());
         holder.photo.setImageResource(feed.getPicAddress());
         holder.photo.setOnEmojiClickListener(new ClickInterface() {
             @Override
             public void onEmojiClicked(int emojiIndex, int x, int y) {
-                Toast.makeText(context, "em "+emojiIndex, Toast.LENGTH_SHORT).show();
+                if (x != -1)
+                    Toast.makeText(context, "Emoji " + emojiIndex+" selected!", Toast.LENGTH_SHORT).show();
                 feed.setClickedEmoji(emojiIndex);
             }
 
             @Override
             public void onEmojiUnclicked(int emojiIndex, int x, int y) {
-                Toast.makeText(context, "unem "+emojiIndex, Toast.LENGTH_SHORT).show();
+                if (x != -1)
+                    Toast.makeText(context, "Emoji " + emojiIndex +" removed", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // always after listener for changes
+        holder.photo.setClickedEmojiNumber(feed.getClickedEmoji());
 
         holder.photo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +90,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             }
         });
 
-        holder.photo.setClickedEmojiNumber(feed.getClickedEmoji());
+        holder.messageTextView.setText(feed.getMessage());
         holder.timeTextView.setText(feed.getTime());
         holder.name.setText(feed.getName());
 

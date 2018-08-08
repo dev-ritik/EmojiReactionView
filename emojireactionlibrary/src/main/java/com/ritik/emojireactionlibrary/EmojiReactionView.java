@@ -370,7 +370,6 @@ public class EmojiReactionView extends AppCompatImageView {
         } else {
             smallerDimension = getHeight() > getWidth() ? getWidth() : getHeight();
         }
-//        Log.i("point 374", "here" + getHeight() + " ");
 
         // set emojisRisingHeight based on user data
         if (emojisRisingHeightGiven == -2) {
@@ -394,7 +393,8 @@ public class EmojiReactionView extends AppCompatImageView {
 
         // Set the homeBitmap with the default Bitmap
         // use R.drawable.home to access or modify it
-        homeBitmap = getBitmapFromId(R.drawable.home, homeSide);
+        if (homeBitmap == null)
+            homeBitmap = getBitmapFromId(R.drawable.home, homeSide);
         // Set the home Rect
         homeRect = new Rect((homeCenter[0] - homeSide / 2), (homeCenter[1] - homeSide / 2), (homeCenter[0] + homeSide / 2), (homeCenter[1] + homeSide / 2));
     }
@@ -424,7 +424,7 @@ public class EmojiReactionView extends AppCompatImageView {
             panelRadius = smallerDimension / 2 > panelRadiusGiven ? panelRadiusGiven : smallerDimension / 2;
         }
 
-        clickedRadius = (int) (panelEmojiSide * 0.7);
+        clickedRadius = (int) (panelEmojiSide * 0.65);
         // angle between successive emojis
         double angle = Math.PI / (numberOfEmojis + 1);
 
@@ -585,7 +585,7 @@ public class EmojiReactionView extends AppCompatImageView {
                 emojiMatrix[clickedIndex].postTranslate(emojiMovingPoint[clickedIndex][0] - (float) valueAnimator.getAnimatedValue() * panelEmojiSide / 2, emojiMovingPoint[clickedIndex][1] - (float) valueAnimator.getAnimatedValue() * panelEmojiSide / 2);
 
                 // reduce the size of background panel radius
-                clickedRadius = (int) (panelEmojiSide * (float) valueAnimator.getAnimatedValue() * 0.7);
+                clickedRadius = (int) (panelEmojiSide * (float) valueAnimator.getAnimatedValue() * 0.65);
                 invalidate();
             }
         });
@@ -597,7 +597,7 @@ public class EmojiReactionView extends AppCompatImageView {
                 homeEmojiVisible = true;
                 // restore background dimness
                 setColorFilter(Color.rgb(255, 255, 255), android.graphics.PorterDuff.Mode.MULTIPLY);
-                clickedRadius = (int) (panelEmojiSide * 0.7);
+                clickedRadius = (int) (panelEmojiSide * 0.65);
             }
         });
         animator.setDuration(600);

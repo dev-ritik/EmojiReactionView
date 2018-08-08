@@ -1,18 +1,15 @@
 package com.ritik.emojireactionview;
 
+/**
+ * This class is the object for displaying sample feeds
+ */
+
 class Feed {
     private String name;
     private int picAddress;
     private String time;
     private String message;
     private int clickedEmoji;
-
-    Feed(String name, String time, String message, int clickedEmoji) {
-        this.name = name;
-        this.time = time;
-        this.message = message;
-        this.clickedEmoji = clickedEmoji;
-    }
 
     Feed(String name, int picAddress, String time, String message, int clickedEmoji) {
         this.name = name;
