@@ -3,9 +3,11 @@ package com.ritik.emojireactionview;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +27,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
         private ViewHolder(View view) {
             super(view);
-//            photo = view.findViewById(R.id.photoImageView);
             photo = view.findViewById(R.id.photoImageView);
             messageTextView =  view.findViewById(R.id.messageTextView);
 
@@ -45,6 +46,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
                                          int viewType) {
         // create a new view
+//        Log.i("point fa50","create");
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.feed, parent, false);
         this.context = parent.getContext();
@@ -56,6 +58,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         // - get element from your dataSet at this position
         // - replace the contents of the view with that element
+//        Log.i("point fa50","bind");
         final Feed feed = mDataSet.get(position);
 
         holder.messageTextView.setText(feed.getMessage());

@@ -1,36 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/my_ph"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <com.ritik.emojireactionlibrary.EmojiReactionView
-        android:id="@+id/image"
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabMode="fixed"
+            app:tabGravity="fill"/>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimaryDark"
-        android:scaleType="centerCrop"
-        android:src="@drawable/android1_min"
-        app:emojis="@array/emoji" />
-    <!---->
-    <!--<android.support.v7.widget.RecyclerView-->
-    <!--android:id="@+id/my_recycler_view"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:divider="@android:color/transparent"-->
-    <!--android:scrollbars="vertical"-->
-    <!--android:stackFromBottom="true"-->
-    <!--android:transcriptMode="alwaysScroll"-->
-    <!--tools:listitem="@layout/feed" />-->
-
-    <!--<ImageView-->
-    <!--android:id="@+id/image1"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:layout_alignParentTop="true"-->
-    <!--android:scaleType="fitXY"-->
-    <!--android:src="@drawable/back" />-->
-
-</LinearLayout>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"  />
+</android.support.design.widget.CoordinatorLayout>
