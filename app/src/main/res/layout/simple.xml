@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:background="@color/colorPrimaryDark"
         android:scaleType="centerCrop"
-        android:src="@drawable/android1_min"
+        android:src="@drawable/feed11"
         app:emojis="@array/emoji" />
 
 </LinearLayout>

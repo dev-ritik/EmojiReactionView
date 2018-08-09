@@ -65,6 +65,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         final Feed feed = mDataSet.get(position);
 
         holder.photo.setImageResource(feed.getPicAddress());
+        holder.photo.setHomeEmojiVisible();
         holder.photo.setOnEmojiClickListener(new ClickInterface() {
             @Override
             public void onEmojiClicked(int emojiIndex, int x, int y) {
