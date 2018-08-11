@@ -4,8 +4,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [ ![Download](https://api.bintray.com/packages/dev-ritik/EmojiReactionView/EmojiReactionView/images/download.svg) ](https://bintray.com/dev-ritik/EmojiReactionView/EmojiReactionView/_latestVersion)
 
-An Android library to make Emoji Reactions on imageviews in a manner Instagram does this!.
+<img src="/sample/coverImage.png" align="centre">
 
+<div align="centre" >An Android library to make Emoji Reactions on imageviews in a manner Instagram does this!.</div>
 
 # Features
 - <b>Design</b> : The library tries to be reasonably close to the original Instagram's design.
@@ -17,8 +18,12 @@ An Android library to make Emoji Reactions on imageviews in a manner Instagram d
 ## Example
 Below is the two sample for usage of the library:
 
-<img src="/sample/simple.gif" align="left" width="370" height="330">
-<img src="/sample/recycler.gif" align="right" width="370" height="330">
+
+<img src="/sample/simple.gif" align="left" width="400" >
+<img src="/sample/recycler.gif" align="right" width="400">
+
+
+<br>
 
 # Usage
 Just add the following dependency in your app's `build.gradle`
