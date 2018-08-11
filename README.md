@@ -22,7 +22,11 @@
 <img src="/sample/coverImage.png" align="centre">
 
 <div align="center">An Android library to make Emoji Reactions on imageviews in a manner Instagram does this!.</div><br>
-**<div align="center">version 1.0.1</div><br>**
+
+___
+
+**version 1.0.1**
+<br>
 
 # Features
 - <b>Design</b> : The library tries to be reasonably close to the original Instagram's design.
@@ -34,10 +38,8 @@
 ## Example
 Below is the two sample for usage of the library:
 
-
-<img src="/sample/simple.gif" align="right" width="410" >
-<img src="/sample/recycler.gif" align="left" width="410">
-
+<img src="/sample/simple.gif" align="right" width="418" >
+<img src="/sample/recycler.gif" align="left" width="418">
 
 <br>
 
