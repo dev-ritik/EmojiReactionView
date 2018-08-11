@@ -2,6 +2,7 @@
 [![platform](https://img.shields.io/badge/Platform-Android-yellow.svg?style=flat-square)](https://www.android.com)
 [![API](https://img.shields.io/badge/API-16%2B-brightgreen.svg?style=flat-square)](https://android-arsenal.com/api?level=16s)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[ ![Download](https://api.bintray.com/packages/dev-ritik/EmojiReactionView/EmojiReactionView/images/download.svg) ](https://bintray.com/dev-ritik/EmojiReactionView/EmojiReactionView/_latestVersion)
 
 An Android library to make Emoji Reactions on imageviews in a manner Instagram does this!.
 
@@ -13,10 +14,27 @@ An Android library to make Emoji Reactions on imageviews in a manner Instagram d
 - <b>Optimum performance</b> : Efforts have been made to keep memory usage as small as possible.
 - <b>Unharmed image</b> : The library doesn't change/modify the image, so every modification of image as imageview is possible
 
+## Example
+Below is the two sample for usage of the library:
+
+<img src="/sample/simple.gif" align="left" width="370" height="330">
+<img src="/sample/recycler.gif" align="right" width="370" height="330">
+
 # Usage
 Just add the following dependency in your app's `build.gradle`
+```groovy
+repositories {
+    maven {
+        url 'https://dl.bintray.com/dev-ritik/EmojiReactionView/'
+    }
+}
 
-## Example
+dependencies {
+    implementation 'com.ritik:emojireactionlibrary:1.0.0'
+}
+
+```
+
 Add the following code in your xml file
 ```xml
 <com.ritik.emojireactionlibrary.EmojiReactionView

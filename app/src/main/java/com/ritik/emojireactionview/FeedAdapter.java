@@ -69,27 +69,51 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         holder.photo.setOnEmojiClickListener(new ClickInterface() {
             @Override
             public void onEmojiClicked(int emojiIndex, int x, int y) {
-                if (x != -1)
-                    Toast.makeText(context, "Emoji " + emojiIndex+" selected!", Toast.LENGTH_SHORT).show();
+                String message;
+                if (x != -1) {
+                    switch (emojiIndex) {
+                        case 0:
+                            message = " Great!! ";
+                            break;
+                        case 1:
+                            message = " Hehe ";
+                            break;
+                        case 2:
+                            message = " Loved... ";
+                            break;
+                        case 3:
+                            message = " Shocked!! ";
+                            break;
+                        case 4:
+                            message = " Sad... ";
+                            break;
+                        case 5:
+                            message = " Lit!! ";
+                            break;
+                        default:
+                            message = " ** ";
+                    }
+                    Toast.makeText(context,message, Toast.LENGTH_SHORT).show();
+                }
                 feed.setClickedEmoji(emojiIndex);
             }
 
             @Override
             public void onEmojiUnclicked(int emojiIndex, int x, int y) {
-                if (x != -1)
-                    Toast.makeText(context, "Emoji " + emojiIndex +" removed", Toast.LENGTH_SHORT).show();
+//                if (x != -1)
+//                    Toast.makeText(context, "Emoji " + emojiIndex +" removed", Toast.LENGTH_SHORT).show();
             }
         });
 
         // always after listener for changes
         holder.photo.setClickedEmojiNumber(feed.getClickedEmoji());
 
-        holder.photo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        holder.photo.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         holder.messageTextView.setText(feed.getMessage());
         holder.timeTextView.setText(feed.getTime());

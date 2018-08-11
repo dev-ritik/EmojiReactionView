@@ -17,11 +17,11 @@ import android.graphics.PathMeasure;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -34,7 +34,7 @@ import static android.util.TypedValue.TYPE_DIMENSION;
  * This class does all the background work related to displaying emoji on the canvas
  */
 
-public class EmojiReactionView extends AppCompatImageView {
+public class EmojiReactionView extends ImageView {
 
     /// General variables
 
@@ -333,7 +333,7 @@ public class EmojiReactionView extends AppCompatImageView {
         invalidate();
     }
 
-    public void setOnEmojiClickListener(@Nullable ClickInterface l) {
+    public void setOnEmojiClickListener(ClickInterface l) {
         // Set the listener to the clickedEmojiNumber
         this.mClickInterface = l;
     }
@@ -566,7 +566,7 @@ public class EmojiReactionView extends AppCompatImageView {
                 emojiRisinginit();
             }
         });
-        animator.setDuration(600);
+        animator.setDuration(500);
         animator.setInterpolator(new AccelerateInterpolator());
         animator.start();
     }
@@ -600,7 +600,7 @@ public class EmojiReactionView extends AppCompatImageView {
                 clickedRadius = (int) (panelEmojiSide * 0.65);
             }
         });
-        animator.setDuration(600);
+        animator.setDuration(500);
         animator.setInterpolator(new AccelerateInterpolator());
         animator.start();
     }
@@ -721,7 +721,8 @@ public class EmojiReactionView extends AppCompatImageView {
                     emojiClicked = true;
                 }
             }
-            return super.onTouchEvent(event);
+            super.onTouchEvent(event);
+            return true;
         } else if (!wasSwiping && event.getAction() == MotionEvent.ACTION_MOVE) {
             // swiping gesture detected
             wasSwiping = true;
