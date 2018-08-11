@@ -1,12 +1,28 @@
-# EmojiReactionView
-[![platform](https://img.shields.io/badge/Platform-Android-yellow.svg?style=flat-square)](https://www.android.com)
-[![API](https://img.shields.io/badge/API-16%2B-brightgreen.svg?style=flat-square)](https://android-arsenal.com/api?level=16s)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[ ![Download](https://api.bintray.com/packages/dev-ritik/EmojiReactionView/EmojiReactionView/images/download.svg) ](https://bintray.com/dev-ritik/EmojiReactionView/EmojiReactionView/_latestVersion)
+# <div align="center"> EmojiReactionView </div>
+
+<div align="center">
+	<a href="https://www.android.com">
+    <img src="https://img.shields.io/badge/platform-Android-brightgreen.svg?style=flat-square"
+      alt="Platform" />
+  </a>
+	<a href="https://android-arsenal.com/api?level=19">
+    <img src="https://img.shields.io/badge/API-19%2B-blue.svg?style=flat-square"
+      alt="API" />
+  </a>
+	<a href="https://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/badge/License-MIT-red.svg?style=flat-square"
+      alt="License: MIT" />
+  </a>
+    <a href="https://bintray.com/dev-ritik/EmojiReactionView/EmojiReactionView/_latestVersion">
+    <img src="https://api.bintray.com/packages/dev-ritik/EmojiReactionView/EmojiReactionView/images/download.svg"
+      alt="Download" />
+  </a>
+</div><br>
 
 <img src="/sample/coverImage.png" align="centre">
 
-<div align="centre" >An Android library to make Emoji Reactions on imageviews in a manner Instagram does this!.</div>
+<div align="center">An Android library to make Emoji Reactions on imageviews in a manner Instagram does this!.</div><br>
+**<div align="center">version 1.0.1</div><br>**
 
 # Features
 - <b>Design</b> : The library tries to be reasonably close to the original Instagram's design.
@@ -19,8 +35,8 @@
 Below is the two sample for usage of the library:
 
 
-<img src="/sample/simple.gif" align="left" width="400" >
-<img src="/sample/recycler.gif" align="right" width="400">
+<img src="/sample/simple.gif" align="right" width="410" >
+<img src="/sample/recycler.gif" align="left" width="410">
 
 
 <br>
@@ -35,7 +51,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.ritik:emojireactionlibrary:1.0.0'
+    implementation 'com.ritik:emojireactionlibrary:1.0.1'
 }
 
 ```
@@ -79,6 +95,9 @@ myImage.setOnEmojiClickListener(new ClickInterface() {
     }
 });
 ```
+
+**If you are struck somewhere, you can always check its usage in the sample app for [Simple](https://github.com/dev-ritik/EmojiReactionView/blob/master/app/src/main/java/com/ritik/emojireactionview/SimpleExample.java) 
+and [RecyclerView](https://github.com/dev-ritik/EmojiReactionView/blob/master/app/src/main/java/com/ritik/emojireactionview/FeedAdapter.java) usage.**
 
 _With this all done and working, you have made to the default design!_
 
