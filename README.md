@@ -24,9 +24,15 @@
 <div align="center">An Android library to make Emoji Reactions on imageviews in a manner Instagram does this!.</div><br>
 
 ___
+# Table of contents
 
-**version 1.0.1**
-<br>
+  * [Features](#features)
+  * [Example](#example)
+  * [Usage](#usage)
+  * [Further customization](#further-customization)
+  * [Public methods](#public-methods)
+  * [Contributions](#contributions)
+  * [License](#license)
 
 # Features
 - <b>Design</b> : The library tries to be reasonably close to the original Instagram's design.
@@ -35,7 +41,7 @@ ___
 - <b>Optimum performance</b> : Efforts have been made to keep memory usage as small as possible.
 - <b>Unharmed image</b> : The library doesn't change/modify the image, so every modification of image as imageview is possible
 
-## Example
+# Example
 Below is the two sample for usage of the library:
 
 <img src="/sample/simple.gif" align="right" width="418" >
@@ -142,10 +148,11 @@ The library provides these attributes to modify default design to a custom one:
 |setHomeEmojiVisible      | Switch to home bitmap visible mode           | boolean                    |
 |setPanelAnimWorking      | Start the panel animation                    | boolean                    |
 
-# Contributions!
+# Contributions
 
 All contributions are welcome and appreciated. Please make a Pull Request or open an issue, if necessary.
 This may also include any form of feature enhancement. Every constructive criticism is welcome.
+See [Contributing.md](https://github.com/dev-ritik/EmojiReactionView/blob/master/CONTRIBUTING.md)
 
 # License
 This library is licensed under `MIT license`. View [license](LICENSE).
