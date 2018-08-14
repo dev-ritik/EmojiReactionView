@@ -106,41 +106,41 @@ _With this all done and working, you have made to the default design!_
 # Further customization
 The library provides these attributes to modify default design to a custom one:
 
-|Attribute            |Description                                                   | Type(Range)                                       |Default Value                        |
-|---------------------|--------------------------------------------------------------|---------------------------------------------------|-------------------------------------|
-|emojis               | Set the Emojis to be displayed in the semi-circular animation| reference                                         |                                     |
-|set_emoji            | Set the current selected emoji                               | integer(>-1)(< noe*) (0 based)                    | -1                                  |
-|home_Center_X       | Set the x coordinate of homeEmoji's center                  | dimensions                                        | 30 * density                        |
-|home_Center_Y       | Set the y coordinate of homeEmoji's center                  | dimensions                                        | Height - 30 * density               |
-|home_side           | Set the side length of homeEmoji                            | dimensions                                        | 50 * density                        |
-|panel_center_X      | Set the x coordinate of the center of semi-circular animation| `dimension` or `fraction` [0%,100%] (w.r.t width)#| width / 2                           |
-|panel_center_Y      | Set the y coordinate of the center of semi-circular animation| `dimension` or `fraction` [0%,100%] (w.r.t height)| Height - emojiSide / 2              |
-|panel_radius        | Set the radius of semi-circular animation                    | dimension                                         | min(Height,Width) / 2 - 20 * density|
-|panel_emoji_side     | Set the side of emojis on the panel                    | dimension                                         | 50 * density                        |
-|emojis_rising_height | Set the height of the rising emojis(to start disappearing)   | `fraction` [0%,100%] (w.r.t height)#              | Height / 2                          |
-|emojis_rising_speed  | Set the speed per frame of the rising emojis                 | dimension                                         | 10 * density                        |
-|emojis_rising_number | Set the number of emojis rising in rising emojis animation   | integer                                           | 24                                  |
+|Attribute            |Description                                                 | Type(Range)                                       |Default Value                        |
+|---------------------|------------------------------------------------------------|---------------------------------------------------|-------------------------------------|
+|emojis               | Set the emojis to be displayed in the panel animation      | reference                                         |                                     |
+|set_emoji            | Set the current selected emoji                             | integer(>-1)(< noe*) (0 based)                    | -1                                  |
+|home_Center_X        | Set the x coordinate of homeEmoji's center                 | dimensions                                        | 30 * density                        |
+|home_Center_Y        | Set the y coordinate of homeEmoji's center                 | dimensions                                        | Height - 30 * density               |
+|home_side            | Set the side length of homeEmoji                           | dimensions                                        | 50 * density                        |
+|panel_center_X       | Set the x coordinate of the center of panel animation      | `dimension` or `fraction` [0%,100%] (w.r.t width)#| width / 2                           |
+|panel_center_Y       | Set the y coordinate of the center of panel animation      | `dimension` or `fraction` [0%,100%] (w.r.t height)| Height - emojiSide / 2              |
+|panel_radius         | Set the radius of panel animation                          | dimension                                         | min(Height,Width) / 2 - 20 * density|
+|panel_emoji_side     | Set the side of emojis on the panel                        | dimension                                         | 50 * density                        |
+|emojis_rising_height | Set the height of the rising emojis(to start disappearing) | `fraction` [0%,100%] (w.r.t height)#              | Height / 2                          |
+|emojis_rising_speed  | Set the speed per frame of the rising emojis               | dimension                                         | 10 * density                        |
+|emojis_rising_number | Set the number of emojis rising in rising emojis animation | integer                                           | 24                                  |
 
 *noe = number of emojis.<br>
 *#* measurement from bottom
 # Public methods 
 
-|Method                   |Description                                    |Data Type                   |
-|-------------------------|-----------------------------------------------|----------------------------|
-|getCentre                | Get the center of semi-circular animation     | int(Pixels)                |
-|getRadius                | Get the radius of semi-circular animation     | int(Pixels)                |
-|get/SetClickedEmojiNumber| Get/Set the current selected emoji            | int (-1 for none)(0 based) |
-|getNumberOfEmojis        | Get the number Of emojis in the panel   | int                        |
-|getEmojisRisingSpeed     | Get the speed per frame of the rising emojis  | int(Pixels)                |
-|getHomeRect             | Get the Rect of the home emoji               | Rect                       |
-|getPanelEmojiSide        | Get the side of emojis on the panel     | int(Pixels)                |
-|get/SetHomeBitmap       | Get/Set the bitmap of the home emoji         | Bitmap                     |
-|isHomeEmojiVisible      | Is home emoji visible                        | boolean                    |
-|isPanelAnimWorking      | Is panel visible                        | boolean                    |
-|isClickingAnimWorking    | Is the clicking animation working             | boolean                    |
-|isEmojiRising            | Is emoji rising animation visible             | boolean                    |
-|setHomeEmojiVisible     | Switch to home bitmap visible mode           | boolean                    |
-|setPanelAnimWorking     | Start the circular animation                  | boolean                    |
+|Method                   |Description                                   |Data Type                   |
+|-------------------------|----------------------------------------------|----------------------------|
+|getCentre                | Get the center of panel animation            | int(Pixels)                |
+|getRadius                | Get the radius of panel animation            | int(Pixels)                |
+|get/SetClickedEmojiNumber| Get/Set the current selected emoji           | int (-1 for none)(0 based) |
+|getNumberOfEmojis        | Get the number Of emojis in the panel        | int                        |
+|getEmojisRisingSpeed     | Get the speed per frame of the rising emojis | int(Pixels)                |
+|getHomeRect              | Get the Rect of the home emoji               | Rect                       |
+|getPanelEmojiSide        | Get the side of emojis on the panel          | int(Pixels)                |
+|get/SetHomeBitmap        | Get/Set the bitmap of the home emoji         | Bitmap                     |
+|isHomeEmojiVisible       | Is home emoji visible                        | boolean                    |
+|isPanelAnimWorking       | Is panel visible                             | boolean                    |
+|isClickingAnimWorking    | Is the clicking animation working            | boolean                    |
+|isEmojiRising            | Is emoji rising animation visible            | boolean                    |
+|setHomeEmojiVisible      | Switch to home bitmap visible mode           | boolean                    |
+|setPanelAnimWorking      | Start the panel animation                    | boolean                    |
 
 # Contributions!
 
@@ -148,5 +148,4 @@ All contributions are welcome and appreciated. Please make a Pull Request or ope
 This may also include any form of feature enhancement. Every constructive criticism is welcome.
 
 # License
-RotatingText is licensed under `MIT license`. View [license](LICENSE).
-
+This library is licensed under `MIT license`. View [license](LICENSE).
