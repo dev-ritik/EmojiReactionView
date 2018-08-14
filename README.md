@@ -2,15 +2,15 @@
 
 <div align="center">
 	<a href="https://www.android.com">
-    <img src="https://img.shields.io/badge/platform-Android-brightgreen.svg?style=flat-square"
+    <img src="https://img.shields.io/badge/platform-Android-brightgreen.svg"
       alt="Platform" />
   </a>
 	<a href="https://android-arsenal.com/api?level=19">
-    <img src="https://img.shields.io/badge/API-19%2B-blue.svg?style=flat-square"
+    <img src="https://img.shields.io/badge/API-19%2B-blue.svg"
       alt="API" />
   </a>
 	<a href="https://opensource.org/licenses/MIT">
-    <img src="https://img.shields.io/badge/License-MIT-red.svg?style=flat-square"
+    <img src="https://img.shields.io/badge/License-MIT-red.svg"
       alt="License: MIT" />
   </a>
     <a href="https://bintray.com/dev-ritik/EmojiReactionView/EmojiReactionView/_latestVersion">
