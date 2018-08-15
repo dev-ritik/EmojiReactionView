@@ -17,6 +17,14 @@
     <img src="https://api.bintray.com/packages/dev-ritik/EmojiReactionView/EmojiReactionView/images/download.svg"
       alt="Download" />
   </a>
+  <a href="https://sputnik.ci/app#/builds/dev-ritik/EmojiReactionView">
+    <img src="https://sputnik.ci/conf/badge"
+      alt="Sputnik" />
+  </a>
+  <a href="https://travis-ci.com/dev-ritik/EmojiReactionView">
+    <img src="https://travis-ci.com/dev-ritik/EmojiReactionView.svg?branch=master"
+      alt="Build Status" />
+  </a>
 </div><br>
 
 <img src="/sample/coverImage.png" align="centre">

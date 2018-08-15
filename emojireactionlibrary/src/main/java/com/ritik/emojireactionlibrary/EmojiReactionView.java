@@ -34,7 +34,7 @@ import static android.util.TypedValue.TYPE_DIMENSION;
  * This class does all the background work related to displaying emoji on the canvas
  */
 
-public class EmojiReactionView extends ImageView {
+public class EmojiReactionView extends android.support.v7.widget.AppCompatImageView {
 
     /// General variables
 
