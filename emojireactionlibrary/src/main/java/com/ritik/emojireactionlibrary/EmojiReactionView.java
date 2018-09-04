@@ -710,7 +710,9 @@ public class EmojiReactionView extends android.support.v7.widget.AppCompatImageV
             // prepare for new gesture
             wasSwiping = false;
             emojiClicked = false;
-            if (panelAnimWorking) {
+            if (homeEmojiVisible && homeRect.contains((int) event.getX(), (int) event.getY())) {
+                emojiClicked = true;
+            } else if (panelAnimWorking) {
                 for (int i = numberOfEmojis - 1; i >= 0; i--) {
                     if (clickedOnEmojiReact(i, event.getX(), event.getY())) {
                         emojiClicked = true;
