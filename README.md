@@ -67,7 +67,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.ritik:emojireactionlibrary:1.0.1'
+    implementation 'com.ritik:emojireactionlibrary:1.0.2'
 }
 
 ```

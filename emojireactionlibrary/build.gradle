@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/dev-ritik/EmojiReactionView'
     gitUrl = 'https://github.com/dev-ritik/EmojiReactionView.git'
 
-    libraryVersion = '1.0.1'
+    libraryVersion = '1.0.2'
 
     developerId = 'dev-ritik'
     developerName = 'Ritik Kumar'
